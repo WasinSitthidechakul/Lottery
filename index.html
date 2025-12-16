@@ -337,7 +337,15 @@
   }
 
   window.deleteItem = function(index) {
-    if (confirm('ต้องการลบรายการนี้?')) {
+    const item = items[index];
+    const confirmMsg = `ต้องการลบรายการนี้?\n\n` +
+      `งวด: ${item.draw}\n` +
+      `หมายเลข: ${item.key}\n` +
+      `บน: ${money(item.top)} บาท\n` +
+      `ล่าง: ${money(item.bottom)} บาท\n` +
+      `รวม: ${money(item.top + item.bottom)} บาท`;
+
+    if (confirm(confirmMsg)) {
       items.splice(index, 1);
       saveToStorage();
       render();
@@ -513,10 +521,16 @@
 
   exportBtn.addEventListener('click', async () => {
     const { rows, grand, grandTop, grandBottom } = summarize();
+
+    // รวบรวมงวดทั้งหมดที่มีในข้อมูล
+    const draws = [...new Set(items.map(it => it.draw))].sort();
+    const drawsText = draws.length > 0 ? `งวด: ${draws.join(', ')}\n\n` : '';
+
     const text = [
       'สรุปรวมเงินตามตัวเลข',
-      ...rows.map(r => `${r.key}\tcount=${r.count}\tบน=${money(r.topSum)}\tล่าง=${money(r.bottomSum)}\tรวม=${money(r.totalSum)}\tเงินรางวัล(บน)=${money(r.topSum * 70)}\tเงินรางวัล(ล่าง)=${money(r.bottomSum * 70)}`),
-      `รวมทั้งหมด\t${money(grand)}\tเงินรางวัล(บน)=${money(grandTop * 70)}\tเงินรางวัล(ล่าง)=${money(grandBottom * 70)}`
+      drawsText + 'ตัวเลข\tจำนวนรายการ\tบน\tล่าง\tรวม\tเงินรางวัล(บน)\tเงินรางวัล(ล่าง)',
+      ...rows.map(r => `${r.key}\t${r.count}\t${money(r.topSum)}\t${money(r.bottomSum)}\t${money(r.totalSum)}\t${money(r.topSum * 70)}\t${money(r.bottomSum * 70)}`),
+      `รวมทั้งหมด\t\t\t\t${money(grand)}\t${money(grandTop * 70)}\t${money(grandBottom * 70)}`
     ].join('\n');
 
     try {
