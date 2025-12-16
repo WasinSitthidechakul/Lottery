@@ -27,8 +27,18 @@
     .draw-row { margin-bottom: 10px; }
     .delete-btn { background: #ef4444; color: white; border: 1px solid black; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 12px; max-width: 200px; display: inline-block; vertical-align: middle; }
     .delete-btn:hover { background: #dc2626; }
+    .heatmap-container { margin-top: 24px; }
+    .heatmap-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+    .heatmap-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 600px; }
+    .heatmap-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #e5e7eb; position: relative; transition: transform 0.1s; }
+    .heatmap-cell:hover { transform: scale(1.1); z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; }
+    .heatmap-legend-item { display: flex; align-items: center; gap: 4px; }
+    .heatmap-legend-box { width: 20px; height: 20px; border-radius: 3px; border: 1px solid #ccc; }
     @media (max-width: 720px) {
       .row, .btns, .twoCol { grid-template-columns: 1fr; }
+      .heatmap-grid { grid-template-columns: repeat(10, 1fr); gap: 2px; }
+      .heatmap-cell { font-size: 10px; }
     }
   </style>
 </head>
@@ -101,6 +111,87 @@
     </table>
 
     <div class="muted">Tip: ใส่เลขซ้ำได้ ระบบจะรวมยอดให้อัตโนมัติ</div>
+
+    <div class="heatmap-container">
+      <div class="heatmap-title">Heat Map: ยอดรวมทั้งหมด (บน + ล่าง)</div>
+      <div id="heatmapGrid" class="heatmap-grid"></div>
+      <div class="heatmap-legend">
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #f3f4f6;"></div>
+          <span>0</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #dbeafe;"></div>
+          <span>น้อย</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #93c5fd;"></div>
+          <span>ปานกลาง</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #3b82f6;"></div>
+          <span>มาก</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #1e40af;"></div>
+          <span>มากที่สุด</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="heatmap-container">
+      <div class="heatmap-title">Heat Map: ยอดรวม (บน)</div>
+      <div id="heatmapGridTop" class="heatmap-grid"></div>
+      <div class="heatmap-legend">
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #f3f4f6;"></div>
+          <span>0</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #fef3c7;"></div>
+          <span>น้อย</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #fbbf24;"></div>
+          <span>ปานกลาง</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #f59e0b;"></div>
+          <span>มาก</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #b45309;"></div>
+          <span>มากที่สุด</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="heatmap-container">
+      <div class="heatmap-title">Heat Map: ยอดรวม (ล่าง)</div>
+      <div id="heatmapGridBottom" class="heatmap-grid"></div>
+      <div class="heatmap-legend">
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #f3f4f6;"></div>
+          <span>0</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #dcfce7;"></div>
+          <span>น้อย</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #86efac;"></div>
+          <span>ปานกลาง</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #22c55e;"></div>
+          <span>มาก</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #15803d;"></div>
+          <span>มากที่สุด</span>
+        </div>
+      </div>
+    </div>
   </div>
 
 <script>
@@ -253,6 +344,105 @@
     }
   }
 
+  function getHeatmapColor(value, maxValue, colorScheme = 'blue') {
+    if (value === 0) return '#f3f4f6';
+    const ratio = value / maxValue;
+
+    if (colorScheme === 'yellow') {
+      // สีเหลือง-ส้มสำหรับ "บน"
+      if (ratio < 0.2) return '#fef3c7';
+      if (ratio < 0.4) return '#fde68a';
+      if (ratio < 0.6) return '#fbbf24';
+      if (ratio < 0.8) return '#f59e0b';
+      return '#b45309';
+    } else if (colorScheme === 'green') {
+      // สีเขียวสำหรับ "ล่าง"
+      if (ratio < 0.2) return '#dcfce7';
+      if (ratio < 0.4) return '#86efac';
+      if (ratio < 0.6) return '#4ade80';
+      if (ratio < 0.8) return '#22c55e';
+      return '#15803d';
+    } else {
+      // สีน้ำเงินสำหรับรวม
+      if (ratio < 0.2) return '#dbeafe';
+      if (ratio < 0.4) return '#93c5fd';
+      if (ratio < 0.6) return '#60a5fa';
+      if (ratio < 0.8) return '#3b82f6';
+      return '#1e40af';
+    }
+  }
+
+  function getTextColor(bgColor) {
+    // สีพื้นหลังเข้มจะใช้ตัวอักษรสีขาว
+    const darkColors = ['#3b82f6', '#1e40af', '#b45309', '#15803d', '#22c55e'];
+    return darkColors.includes(bgColor) ? '#ffffff' : '#111827';
+  }
+
+  function renderHeatmapGeneric(gridId, valueType = 'total', colorScheme = 'blue') {
+    const heatmapGrid = document.getElementById(gridId);
+    const { rows } = summarize();
+
+    // สร้าง map ของยอดรวมแต่ละเลข
+    const valueMap = new Map();
+    rows.forEach(r => {
+      if (valueType === 'top') {
+        valueMap.set(r.key, r.topSum);
+      } else if (valueType === 'bottom') {
+        valueMap.set(r.key, r.bottomSum);
+      } else {
+        valueMap.set(r.key, r.totalSum);
+      }
+    });
+
+    // หาค่าสูงสุด
+    const maxValue = Math.max(...Array.from(valueMap.values()), 1);
+
+    // สร้างเซลล์ 00-99
+    heatmapGrid.innerHTML = '';
+    for (let i = 0; i < 100; i++) {
+      const key = String(i).padStart(2, '0');
+      const value = valueMap.get(key) || 0;
+      const bgColor = getHeatmapColor(value, maxValue, colorScheme);
+      const textColor = getTextColor(bgColor);
+
+      const cell = document.createElement('div');
+      cell.className = 'heatmap-cell';
+      cell.style.backgroundColor = bgColor;
+      cell.style.color = textColor;
+      cell.textContent = key;
+
+      if (valueType === 'top') {
+        cell.title = `${key}: บน ${money(value)} บาท`;
+      } else if (valueType === 'bottom') {
+        cell.title = `${key}: ล่าง ${money(value)} บาท`;
+      } else {
+        cell.title = `${key}: รวม ${money(value)} บาท`;
+      }
+
+      // คลิกเพื่อดูรายละเอียด
+      cell.addEventListener('click', () => {
+        if (value > 0) {
+          const detail = rows.find(r => r.key === key);
+          alert(`หมายเลข: ${key}\nจำนวนรายการ: ${detail.count}\nบน: ${money(detail.topSum)}\nล่าง: ${money(detail.bottomSum)}\nรวม: ${money(detail.totalSum)}\nเงินรางวัล(บน): ${money(detail.topSum * 70)}\nเงินรางวัล(ล่าง): ${money(detail.bottomSum * 70)}`);
+        }
+      });
+
+      heatmapGrid.appendChild(cell);
+    }
+  }
+
+  function renderHeatmap() {
+    renderHeatmapGeneric('heatmapGrid', 'total', 'blue');
+  }
+
+  function renderHeatmapTop() {
+    renderHeatmapGeneric('heatmapGridTop', 'top', 'yellow');
+  }
+
+  function renderHeatmapBottom() {
+    renderHeatmapGeneric('heatmapGridBottom', 'bottom', 'green');
+  }
+
   function render() {
     // Raw list
     if (items.length === 0) {
@@ -282,6 +472,11 @@
     grandTotalEl.textContent = money(grand);
     grandPrizeTopEl.textContent = money(grandTop * 70);
     grandPrizeBottomEl.textContent = money(grandBottom * 70);
+
+    // Render all heatmaps
+    renderHeatmap();
+    renderHeatmapTop();
+    renderHeatmapBottom();
   }
 
   // Validate drawNumberInput to allow only 1 or 2
