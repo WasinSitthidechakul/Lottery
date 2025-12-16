@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sum by Duplicate Number</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 16px; font-size: 16px; }
+    .card { max-width: 900px; margin: 0 auto; padding: 16px; border: 1px solid #ddd; border-radius: 12px; }
+    h1 { font-size: 28px; margin: 0 0 12px; }
+    .row { display: grid; grid-template-columns: 200px 200px 200px; gap: 40px; }
+    label { font-size: 16px; color: #444; display: block; margin-bottom: 4px; }
+    input, textarea, button { width: 100%; font-size: 18px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    .row input { padding: 8px; }
+    button { cursor: pointer; border: 0; }
+    .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .primary { background: #111827; color: white; }
+    .secondary { background: #e5e7eb; }
+    .danger { background: #fee2e2; }
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; font-size: 16px; }
+    th { font-size: 16px; color: #555; font-weight: 600; }
+    .muted { color: #6b7280; font-size: 15px; margin-top: 8px; }
+    .total { font-weight: 700; }
+    .twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    @media (max-width: 720px) {
+      .row, .btns, .twoCol { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>ตารางคำนวณ หวย!!!</h1>
+
+    <div class="row">
+      <div>
+        <label>เลขที่ซื้อ</label>
+        <input id="keyInput" inputmode="numeric" placeholder="เช่น 12" maxlength="2" />
+      </div>
+      <div>
+        <label>บน</label>
+        <input id="topInput" inputmode="decimal" placeholder="เช่น 100" />
+      </div>
+      <div>
+        <label>ล่าง</label>
+        <input id="bottomInput" inputmode="decimal" placeholder="เช่น 50" />
+      </div>
+    </div>
+
+    <div class="btns">
+      <button class="primary" id="addBtn">เพิ่มรายการ</button>
+      <button class="secondary" id="exportBtn">คัดลอกสรุป</button>
+      <button class="danger" id="clearBtn">ล้างทั้งหมด</button>
+    </div>
+
+    <div>
+      <label>รายการดิบ</label>
+      <div id="rawList" class="muted">ยังไม่มีรายการ</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ตัวเลข</th>
+          <th>จำนวนรายการ</th>
+          <th>ยอดรวม</th>
+          <th>เงินรางวัล (บน)</th>
+          <th>เงินรางวัล (ล่าง)</th>
+        </tr>
+      </thead>
+      <tbody id="summaryBody"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" class="total">รวมทั้งหมด</td>
+          <td class="total" id="grandTotal">0</td>
+          <td class="total" id="grandPrizeTop">0</td>
+          <td class="total" id="grandPrizeBottom">0</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="muted">Tip: ใส่เลขซ้ำได้ ระบบจะรวมยอดให้อัตโนมัติ</div>
+  </div>
+
+<script>
+  // เก็บรายการดิบ: [{key: "123", top: 100, bottom: 50}, ...]
+  const items = [];
+
+  const keyInput = document.getElementById('keyInput');
+  const topInput = document.getElementById('topInput');
+  const bottomInput = document.getElementById('bottomInput');
+  const addBtn = document.getElementById('addBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const summaryBody = document.getElementById('summaryBody');
+  const grandTotalEl = document.getElementById('grandTotal');
+  const grandPrizeTopEl = document.getElementById('grandPrizeTop');
+  const grandPrizeBottomEl = document.getElementById('grandPrizeBottom');
+  const rawList = document.getElementById('rawList');
+  const exportBtn = document.getElementById('exportBtn');
+
+  function parseAmount(v) {
+    // อนุญาต 1,200.50 -> 1200.50
+    const cleaned = String(v).replace(/,/g, '').trim();
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function addItem(key, top, bottom) {
+    const k = String(key).trim();
+    if (!k) return alert('กรุณาใส่ตัวเลข (Key)');
+    if (!/^\d{2}$/.test(k)) return alert('กรุณาใส่เลข 2 หลักเท่านั้น (00-99)');
+    const t = parseAmount(top) || 0;
+    const b = parseAmount(bottom) || 0;
+    if (t === 0 && b === 0) return alert('กรุณาใส่จำนวนเงิน บน หรือ ล่าง');
+    items.push({ key: k, top: t, bottom: b });
+    render();
+  }
+
+  function summarize() {
+    // map: key -> {count, topSum, bottomSum, totalSum}
+    const map = new Map();
+    let grandTotal = 0;
+    let grandTopSum = 0;
+    let grandBottomSum = 0;
+
+    for (const it of items) {
+      const itemTotal = it.top + it.bottom;
+      grandTotal += itemTotal;
+      grandTopSum += it.top;
+      grandBottomSum += it.bottom;
+      if (!map.has(it.key)) map.set(it.key, { count: 0, topSum: 0, bottomSum: 0, totalSum: 0 });
+      const cur = map.get(it.key);
+      cur.count += 1;
+      cur.topSum += it.top;
+      cur.bottomSum += it.bottom;
+      cur.totalSum += itemTotal;
+    }
+
+    // แปลงเป็น array เรียงตาม key
+    const rows = Array.from(map.entries())
+      .map(([key, v]) => ({ key, count: v.count, topSum: v.topSum, bottomSum: v.bottomSum, totalSum: v.totalSum }))
+      .sort((a, b) => a.key.localeCompare(b.key));
+
+    return { rows, grand: grandTotal, grandTop: grandTopSum, grandBottom: grandBottomSum };
+  }
+
+  function money(n) {
+    // แสดงรูปแบบเงิน
+    return n.toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
+  function render() {
+    // Raw list
+    if (items.length === 0) {
+      rawList.textContent = 'ยังไม่มีรายการ';
+    } else {
+      rawList.innerHTML = items
+        .map((it, idx) => `${idx + 1}. ${it.key} → บน: ${money(it.top)}, ล่าง: ${money(it.bottom)}`)
+        .join('<br>');
+    }
+
+    // Summary
+    const { rows, grand, grandTop, grandBottom } = summarize();
+    summaryBody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.key}</td>
+        <td>${r.count}</td>
+        <td>บน: ${money(r.topSum)}<br>ล่าง: ${money(r.bottomSum)}<br>รวม: ${money(r.totalSum)}</td>
+        <td>${money(r.topSum * 70)}</td>
+        <td>${money(r.bottomSum * 70)}</td>
+      </tr>
+    `).join('');
+
+    grandTotalEl.textContent = money(grand);
+    grandPrizeTopEl.textContent = money(grandTop * 70);
+    grandPrizeBottomEl.textContent = money(grandBottom * 70);
+  }
+
+  // Validate keyInput to allow only 2 digits
+  keyInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
+  });
+
+  addBtn.addEventListener('click', () => {
+    addItem(keyInput.value, topInput.value, bottomInput.value);
+    keyInput.value = '';
+    topInput.value = '';
+    bottomInput.value = '';
+    keyInput.focus();
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (items.length === 0) return;
+    if (confirm('คุณต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) {
+      items.length = 0;
+      render();
+    }
+  });
+
+  exportBtn.addEventListener('click', async () => {
+    const { rows, grand, grandTop, grandBottom } = summarize();
+    const text = [
+      'สรุปรวมเงินตามตัวเลข',
+      ...rows.map(r => `${r.key}\tcount=${r.count}\tบน=${money(r.topSum)}\tล่าง=${money(r.bottomSum)}\tรวม=${money(r.totalSum)}\tเงินรางวัล(บน)=${money(r.topSum * 70)}\tเงินรางวัล(ล่าง)=${money(r.bottomSum * 70)}`),
+      `รวมทั้งหมด\t${money(grand)}\tเงินรางวัล(บน)=${money(grandTop * 70)}\tเงินรางวัล(ล่าง)=${money(grandBottom * 70)}`
+    ].join('\n');
+
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('คัดลอกสรุปแล้ว');
+    } catch {
+      // fallback
+      prompt('คัดลอกเองจากช่องนี้:', text);
+    }
+  });
+
+  render();
+</script>
+</body>
+</html>
