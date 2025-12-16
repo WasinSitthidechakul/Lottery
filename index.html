@@ -23,6 +23,9 @@
     .muted { color: #6b7280; font-size: 15px; margin-top: 8px; }
     .total { font-weight: 700; }
     .twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .raw-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+    .delete-btn { background: #ef4444; color: white; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-left: 8px; }
+    .delete-btn:hover { background: #dc2626; }
     @media (max-width: 720px) {
       .row, .btns, .twoCol { grid-template-columns: 1fr; }
     }
@@ -168,14 +171,27 @@
     return n.toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
 
+  window.deleteItem = function(index) {
+    if (confirm('ต้องการลบรายการนี้?')) {
+      items.splice(index, 1);
+      saveToStorage();
+      render();
+    }
+  }
+
   function render() {
     // Raw list
     if (items.length === 0) {
       rawList.textContent = 'ยังไม่มีรายการ';
     } else {
       rawList.innerHTML = items
-        .map((it, idx) => `${idx + 1}. ${it.key} → บน: ${money(it.top)}, ล่าง: ${money(it.bottom)}`)
-        .join('<br>');
+        .map((it, idx) => `
+          <div class="raw-item">
+            <span>${idx + 1}. ${it.key} → บน: ${money(it.top)}, ล่าง: ${money(it.bottom)}</span>
+            <button class="delete-btn" onclick="deleteItem(${idx})">ลบ</button>
+          </div>
+        `)
+        .join('');
     }
 
     // Summary
