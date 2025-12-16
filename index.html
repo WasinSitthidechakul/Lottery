@@ -84,7 +84,8 @@
 
 <script>
   // เก็บรายการดิบ: [{key: "123", top: 100, bottom: 50}, ...]
-  const items = [];
+  const STORAGE_KEY = 'lottery_items';
+  const items = loadFromStorage();
 
   const keyInput = document.getElementById('keyInput');
   const topInput = document.getElementById('topInput');
@@ -97,6 +98,23 @@
   const grandPrizeBottomEl = document.getElementById('grandPrizeBottom');
   const rawList = document.getElementById('rawList');
   const exportBtn = document.getElementById('exportBtn');
+
+  function loadFromStorage() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveToStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch (e) {
+      console.error('Failed to save data:', e);
+    }
+  }
 
   function parseAmount(v) {
     // อนุญาต 1,200.50 -> 1200.50
@@ -113,6 +131,7 @@
     const b = parseAmount(bottom) || 0;
     if (t === 0 && b === 0) return alert('กรุณาใส่จำนวนเงิน บน หรือ ล่าง');
     items.push({ key: k, top: t, bottom: b });
+    saveToStorage();
     render();
   }
 
@@ -193,6 +212,7 @@
     if (items.length === 0) return;
     if (confirm('คุณต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) {
       items.length = 0;
+      saveToStorage();
       render();
     }
   });
