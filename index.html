@@ -13,7 +13,7 @@
     input, textarea, button { width: 100%; font-size: 18px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
     .row input { padding: 8px; }
     button { cursor: pointer; border: 0; }
-    .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; margin-bottom: 16px; }
+    .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; margin-bottom: 10px; }
     .primary { background: #111827; color: white; }
     .secondary { background: #e5e7eb; }
     .danger { background: #fee2e2; }
@@ -47,7 +47,10 @@
           <option value="">เลือกเดือน</option>
         </select>
       </div>
-      <div></div>
+      <div>
+        <label>ปี (พ.ศ.)</label>
+        <input id="yearInput" inputmode="numeric" placeholder="เช่น 2568" maxlength="4" />
+      </div>
     </div>
 
     <div class="row">
@@ -107,6 +110,7 @@
 
   const drawNumberInput = document.getElementById('drawNumberInput');
   const monthSelect = document.getElementById('monthSelect');
+  const yearInput = document.getElementById('yearInput');
   const keyInput = document.getElementById('keyInput');
   const topInput = document.getElementById('topInput');
   const bottomInput = document.getElementById('bottomInput');
@@ -125,12 +129,15 @@
   function initMonthOptions() {
     const months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
                     'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
-    const currentYear = new Date().getFullYear() + 543; // ปี พ.ศ.
 
     monthSelect.innerHTML = '<option value="">เลือกเดือน</option>';
     months.forEach(month => {
-      monthSelect.innerHTML += `<option value="${month} ${currentYear}">${month} ${currentYear}</option>`;
+      monthSelect.innerHTML += `<option value="${month}">${month}</option>`;
     });
+
+    // ตั้งค่าปีเริ่มต้น
+    const currentYear = new Date().getFullYear() + 543; // ปี พ.ศ.
+    yearInput.value = currentYear;
   }
 
   // โหลดงวดล่าสุดที่เลือก
@@ -138,9 +145,10 @@
     try {
       const saved = localStorage.getItem(LAST_DRAW_KEY);
       if (saved) {
-        const { drawNumber, month } = JSON.parse(saved);
+        const { drawNumber, month, year } = JSON.parse(saved);
         drawNumberInput.value = drawNumber;
         monthSelect.value = month;
+        if (year) yearInput.value = year;
       }
     } catch {
       // ignore
@@ -148,9 +156,9 @@
   }
 
   // เซฟงวดที่เลือก
-  function saveLastDraw(drawNumber, month) {
+  function saveLastDraw(drawNumber, month, year) {
     try {
-      localStorage.setItem(LAST_DRAW_KEY, JSON.stringify({ drawNumber, month }));
+      localStorage.setItem(LAST_DRAW_KEY, JSON.stringify({ drawNumber, month, year }));
     } catch {
       // ignore
     }
@@ -180,13 +188,16 @@
     return Number.isFinite(n) ? n : null;
   }
 
-  function addItem(drawNumber, month, key, top, bottom) {
+  function addItem(drawNumber, month, year, key, top, bottom) {
     const dn = String(drawNumber).trim();
     if (!dn) return alert('กรุณาใส่งวดที่ (1 หรือ 2)');
     if (dn !== '1' && dn !== '2') return alert('งวดที่ต้องเป็น 1 หรือ 2 เท่านั้น');
     const m = String(month).trim();
     if (!m) return alert('กรุณาเลือกเดือน');
-    const draw = `${m} งวด ${dn}`;
+    const y = String(year).trim();
+    if (!y) return alert('กรุณาใส่ปี');
+    if (!/^\d{4}$/.test(y)) return alert('กรุณาใส่ปี พ.ศ. 4 หลัก (เช่น 2568)');
+    const draw = `${m} ${y} งวด ${dn}`;
 
     const k = String(key).trim();
     if (!k) return alert('กรุณาใส่ตัวเลข (Key)');
@@ -196,7 +207,7 @@
     if (t === 0 && b === 0) return alert('กรุณาใส่จำนวนเงิน บน หรือ ล่าง');
 
     items.push({ draw: draw, key: k, top: t, bottom: b });
-    saveLastDraw(dn, m);
+    saveLastDraw(dn, m, y);
     saveToStorage();
     render();
   }
@@ -278,13 +289,18 @@
     e.target.value = e.target.value.replace(/[^12]/g, '');
   });
 
+  // Validate yearInput to allow only 4 digits
+  yearInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+  });
+
   // Validate keyInput to allow only 2 digits
   keyInput.addEventListener('input', (e) => {
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
   });
 
   addBtn.addEventListener('click', () => {
-    addItem(drawNumberInput.value, monthSelect.value, keyInput.value, topInput.value, bottomInput.value);
+    addItem(drawNumberInput.value, monthSelect.value, yearInput.value, keyInput.value, topInput.value, bottomInput.value);
     keyInput.value = '';
     topInput.value = '';
     bottomInput.value = '';
