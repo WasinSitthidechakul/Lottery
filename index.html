@@ -24,6 +24,7 @@
     .total { font-weight: 700; }
     .twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
     .raw-item { padding: 4px 0; }
+    .draw-row { margin-bottom: 16px; }
     .delete-btn { background: #ef4444; color: white; border: 1px solid black; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 12px; max-width: 200px; display: inline-block; vertical-align: middle; }
     .delete-btn:hover { background: #dc2626; }
     @media (max-width: 720px) {
@@ -35,7 +36,7 @@
   <div class="card">
     <h1>ตารางคำนวณ หวย!!!</h1>
 
-    <div class="row">
+    <div class="row draw-row">
       <div>
         <label>งวดที่</label>
         <input id="drawNumberInput" inputmode="numeric" placeholder="1 หรือ 2" maxlength="1" />
