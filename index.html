@@ -187,7 +187,7 @@
       rawList.innerHTML = items
         .map((it, idx) => `
           <div class="raw-item">
-            <button class="delete-btn" onclick="deleteItem(${idx})">ลบ</button><span>${idx + 1}. ${it.key} → บน: ${money(it.top)}, ล่าง: ${money(it.bottom)}</span>
+            <button class="delete-btn" onclick="deleteItem(${idx})">ลบ</button><span><b>${idx + 1}.</b> ${it.key} → บน: ${money(it.top)}, ล่าง: ${money(it.bottom)}</span>
           </div>
         `)
         .join('');
