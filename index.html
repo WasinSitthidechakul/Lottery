@@ -35,11 +35,18 @@
   <div class="card">
     <h1>ตารางคำนวณ หวย!!!</h1>
 
-    <div>
-      <label>งวดประจำเดือน</label>
-      <select id="drawSelect">
-        <option value="">เลือกงวด</option>
-      </select>
+    <div class="row">
+      <div>
+        <label>งวดที่</label>
+        <input id="drawNumberInput" inputmode="numeric" placeholder="1 หรือ 2" maxlength="1" />
+      </div>
+      <div>
+        <label>เดือน</label>
+        <select id="monthSelect">
+          <option value="">เลือกเดือน</option>
+        </select>
+      </div>
+      <div></div>
     </div>
 
     <div class="row">
@@ -97,7 +104,8 @@
   const STORAGE_KEY = 'lottery_items';
   const items = loadFromStorage();
 
-  const drawSelect = document.getElementById('drawSelect');
+  const drawNumberInput = document.getElementById('drawNumberInput');
+  const monthSelect = document.getElementById('monthSelect');
   const keyInput = document.getElementById('keyInput');
   const topInput = document.getElementById('topInput');
   const bottomInput = document.getElementById('bottomInput');
@@ -110,17 +118,41 @@
   const rawList = document.getElementById('rawList');
   const exportBtn = document.getElementById('exportBtn');
 
-  // สร้างตัวเลือกงวด
-  function initDrawOptions() {
+  const LAST_DRAW_KEY = 'last_draw_selection';
+
+  // สร้างตัวเลือกเดือน
+  function initMonthOptions() {
     const months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
                     'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
     const currentYear = new Date().getFullYear() + 543; // ปี พ.ศ.
 
-    drawSelect.innerHTML = '<option value="">เลือกงวด</option>';
+    monthSelect.innerHTML = '<option value="">เลือกเดือน</option>';
     months.forEach(month => {
-      drawSelect.innerHTML += `<option value="${month} ${currentYear} งวด 1">${month} ${currentYear} งวด 1</option>`;
-      drawSelect.innerHTML += `<option value="${month} ${currentYear} งวด 2">${month} ${currentYear} งวด 2</option>`;
+      monthSelect.innerHTML += `<option value="${month} ${currentYear}">${month} ${currentYear}</option>`;
     });
+  }
+
+  // โหลดงวดล่าสุดที่เลือก
+  function loadLastDraw() {
+    try {
+      const saved = localStorage.getItem(LAST_DRAW_KEY);
+      if (saved) {
+        const { drawNumber, month } = JSON.parse(saved);
+        drawNumberInput.value = drawNumber;
+        monthSelect.value = month;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // เซฟงวดที่เลือก
+  function saveLastDraw(drawNumber, month) {
+    try {
+      localStorage.setItem(LAST_DRAW_KEY, JSON.stringify({ drawNumber, month }));
+    } catch {
+      // ignore
+    }
   }
 
   function loadFromStorage() {
@@ -147,16 +179,23 @@
     return Number.isFinite(n) ? n : null;
   }
 
-  function addItem(draw, key, top, bottom) {
-    const d = String(draw).trim();
-    if (!d) return alert('กรุณาเลือกงวด');
+  function addItem(drawNumber, month, key, top, bottom) {
+    const dn = String(drawNumber).trim();
+    if (!dn) return alert('กรุณาใส่งวดที่ (1 หรือ 2)');
+    if (dn !== '1' && dn !== '2') return alert('งวดที่ต้องเป็น 1 หรือ 2 เท่านั้น');
+    const m = String(month).trim();
+    if (!m) return alert('กรุณาเลือกเดือน');
+    const draw = `${m} งวด ${dn}`;
+
     const k = String(key).trim();
     if (!k) return alert('กรุณาใส่ตัวเลข (Key)');
     if (!/^\d{2}$/.test(k)) return alert('กรุณาใส่เลข 2 หลักเท่านั้น (00-99)');
     const t = parseAmount(top) || 0;
     const b = parseAmount(bottom) || 0;
     if (t === 0 && b === 0) return alert('กรุณาใส่จำนวนเงิน บน หรือ ล่าง');
-    items.push({ draw: d, key: k, top: t, bottom: b });
+
+    items.push({ draw: draw, key: k, top: t, bottom: b });
+    saveLastDraw(dn, m);
     saveToStorage();
     render();
   }
@@ -233,13 +272,18 @@
     grandPrizeBottomEl.textContent = money(grandBottom * 70);
   }
 
+  // Validate drawNumberInput to allow only 1 or 2
+  drawNumberInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^12]/g, '');
+  });
+
   // Validate keyInput to allow only 2 digits
   keyInput.addEventListener('input', (e) => {
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
   });
 
   addBtn.addEventListener('click', () => {
-    addItem(drawSelect.value, keyInput.value, topInput.value, bottomInput.value);
+    addItem(drawNumberInput.value, monthSelect.value, keyInput.value, topInput.value, bottomInput.value);
     keyInput.value = '';
     topInput.value = '';
     bottomInput.value = '';
@@ -272,7 +316,8 @@
     }
   });
 
-  initDrawOptions();
+  initMonthOptions();
+  loadLastDraw();
   render();
 </script>
 </body>
