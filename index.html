@@ -11,9 +11,12 @@
     .row { display: grid; grid-template-columns: 200px 200px 200px; gap: 40px; }
     label { font-size: 16px; color: #444; display: block; margin-bottom: 4px; font-weight: bold; }
     input, textarea, button { width: 100%; font-size: 18px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
-    .row input { padding: 8px; }
+    .row input { padding: 8px; margin-bottom: 0; }
     button { cursor: pointer; border: 0; }
     .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; margin-bottom: 10px; }
+    .quick-add-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: -8px; grid-column: 1 / -1; }
+    .quick-add-btns button { padding: 6px; font-size: 14px; background: #f3f4f6; border: 1px solid #d1d5db; }
+    .quick-add-btns button:hover { background: #e5e7eb; }
     .primary { background: #111827; color: white; }
     .secondary { background: #e5e7eb; }
     .danger { background: #fee2e2; }
@@ -30,15 +33,20 @@
     .heatmap-container { margin-top: 24px; }
     .heatmap-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
     .heatmap-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 600px; }
-    .heatmap-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #e5e7eb; position: relative; transition: transform 0.1s; }
+    .heatmap-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #e5e7eb; position: relative; transition: transform 0.1s; }
+    .heatmap-cell-number { font-size: 14px; font-weight: 600; }
+    .heatmap-cell-value { font-size: 10px; font-weight: 400; margin-top: 2px; }
     .heatmap-cell:hover { transform: scale(1.1); z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
     .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; }
     .heatmap-legend-item { display: flex; align-items: center; gap: 4px; }
     .heatmap-legend-box { width: 20px; height: 20px; border-radius: 3px; border: 1px solid #ccc; }
+    .show-all-btn { background: #3b82f6; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 8px; display: inline-block; border: 0; }
+    .show-all-btn:hover { background: #2563eb; }
     @media (max-width: 720px) {
       .row, .btns, .twoCol { grid-template-columns: 1fr; }
       .heatmap-grid { grid-template-columns: repeat(10, 1fr); gap: 2px; }
-      .heatmap-cell { font-size: 10px; }
+      .heatmap-cell-number { font-size: 10px; }
+      .heatmap-cell-value { font-size: 7px; margin-top: 1px; }
     }
   </style>
 </head>
@@ -75,6 +83,16 @@
       <div>
         <label>ล่าง</label>
         <input id="bottomInput" inputmode="decimal" placeholder="เช่น 100" />
+      </div>
+      <div class="quick-add-btns">
+        <button type="button" onclick="addToBothInputs(10)">+10</button>
+        <button type="button" onclick="addToBothInputs(20)">+20</button>
+        <button type="button" onclick="addToBothInputs(25)">+25</button>
+        <button type="button" onclick="addToBothInputs(30)">+30</button>
+        <button type="button" onclick="addToBothInputs(50)">+50</button>
+        <button type="button" onclick="addToBothInputs(100)">+100</button>
+        <button type="button" onclick="addToBothInputs(150)">+150</button>
+        <button type="button" onclick="addToBothInputs(200)">+200</button>
       </div>
     </div>
 
@@ -198,6 +216,7 @@
   // เก็บรายการดิบ: [{draw: "มกราคม งวด 1", key: "123", top: 100, bottom: 50}, ...]
   const STORAGE_KEY = 'lottery_items';
   const items = loadFromStorage();
+  let showAllItems = false;
 
   const drawNumberInput = document.getElementById('drawNumberInput');
   const monthSelect = document.getElementById('monthSelect');
@@ -352,6 +371,11 @@
     }
   }
 
+  window.toggleShowAll = function() {
+    showAllItems = !showAllItems;
+    render();
+  }
+
   function getHeatmapColor(value, maxValue, colorScheme = 'blue') {
     if (value === 0) return '#f3f4f6';
     const ratio = value / maxValue;
@@ -417,7 +441,12 @@
       cell.className = 'heatmap-cell';
       cell.style.backgroundColor = bgColor;
       cell.style.color = textColor;
-      cell.textContent = key;
+
+      // สร้างโครงสร้าง HTML ภายในเซลล์
+      cell.innerHTML = `
+        <div class="heatmap-cell-number">${key}</div>
+        <div class="heatmap-cell-value">${value > 0 ? money(value) : ''}</div>
+      `;
 
       if (valueType === 'top') {
         cell.title = `${key}: บน ${money(value)} บาท`;
@@ -456,13 +485,27 @@
     if (items.length === 0) {
       rawList.textContent = 'ยังไม่มีรายการ';
     } else {
-      rawList.innerHTML = items
-        .map((it, idx) => `
-          <div class="raw-item">
-            <button class="delete-btn" onclick="deleteItem(${idx})">ลบ</button><span><b>${idx + 1}.</b> [${it.draw}] ${it.key} → บน: ${money(it.top)}, ล่าง: ${money(it.bottom)}</span>
-          </div>
-        `)
+      const reversedItems = items.slice().reverse();
+      const displayItems = showAllItems ? reversedItems : reversedItems.slice(0, 5);
+
+      const itemsHtml = displayItems
+        .map((it, revIdx) => {
+          const idx = items.length - 1 - revIdx;
+          return `
+            <div class="raw-item">
+              <button class="delete-btn" onclick="deleteItem(${idx})">ลบ</button><span><b>${idx + 1}.</b> [${it.draw}] ${it.key} → บน: ${money(it.top)}, ล่าง: ${money(it.bottom)}</span>
+            </div>
+          `;
+        })
         .join('');
+
+      const showAllButton = items.length > 5 && !showAllItems
+        ? `<button class="show-all-btn" onclick="toggleShowAll()">ดูทั้งหมด (${items.length} รายการ)</button>`
+        : items.length > 5 && showAllItems
+        ? `<button class="show-all-btn" onclick="toggleShowAll()">ย่อรายการ</button>`
+        : '';
+
+      rawList.innerHTML = itemsHtml + showAllButton;
     }
 
     // Summary
@@ -501,6 +544,21 @@
   keyInput.addEventListener('input', (e) => {
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
   });
+
+  // ฟังก์ชันเพิ่มจำนวนเงินในช่อง input
+  window.addToInput = function(inputId, amount) {
+    const input = document.getElementById(inputId);
+    const currentValue = parseAmount(input.value) || 0;
+    input.value = currentValue + amount;
+  }
+
+  // ฟังก์ชันเพิ่มจำนวนเงินทั้งบนและล่าง
+  window.addToBothInputs = function(amount) {
+    const topCurrentValue = parseAmount(topInput.value) || 0;
+    const bottomCurrentValue = parseAmount(bottomInput.value) || 0;
+    topInput.value = topCurrentValue + amount;
+    bottomInput.value = bottomCurrentValue + amount;
+  }
 
   addBtn.addEventListener('click', () => {
     addItem(drawNumberInput.value, monthSelect.value, yearInput.value, keyInput.value, topInput.value, bottomInput.value);
