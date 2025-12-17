@@ -15,8 +15,9 @@
     button { cursor: pointer; border: 0; }
     .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; margin-bottom: 10px; }
     .quick-add-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: -8px; grid-column: 1 / -1; }
-    .quick-add-btns button { padding: 6px; font-size: 14px; background: #f3f4f6; border: 1px solid #d1d5db; }
-    .quick-add-btns button:hover { background: #e5e7eb; }
+    .quick-add-btns button { padding: 8px; font-size: 14px; font-weight: 600; background: linear-gradient(to bottom, #ffffff, #f3f4f6); border: 2px solid #9ca3af; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.15s ease; }
+    .quick-add-btns button:hover { background: linear-gradient(to bottom, #f9fafb, #e5e7eb); border-color: #6b7280; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transform: translateY(-1px); }
+    .quick-add-btns button:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .primary { background: #111827; color: white; }
     .secondary { background: #e5e7eb; }
     .danger { background: #fee2e2; }
@@ -33,6 +34,9 @@
     .heatmap-container { margin-top: 24px; }
     .heatmap-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
     .heatmap-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 600px; }
+    .heatmap-grid-large { max-width: 750px; gap: 5px; }
+    .heatmap-grid-large .heatmap-cell-number { font-size: 16px; }
+    .heatmap-grid-large .heatmap-cell-value { font-size: 11px; }
     .heatmap-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #e5e7eb; position: relative; transition: transform 0.1s; }
     .heatmap-cell-number { font-size: 14px; font-weight: 600; }
     .heatmap-cell-value { font-size: 10px; font-weight: 400; margin-top: 2px; }
@@ -132,7 +136,7 @@
 
     <div class="heatmap-container">
       <div class="heatmap-title">Heat Map: ยอดรวมทั้งหมด (บน + ล่าง)</div>
-      <div id="heatmapGrid" class="heatmap-grid"></div>
+      <div id="heatmapGrid" class="heatmap-grid heatmap-grid-large"></div>
       <div class="heatmap-legend">
         <div class="heatmap-legend-item">
           <div class="heatmap-legend-box" style="background: #f3f4f6;"></div>
@@ -416,11 +420,20 @@
 
     // สร้าง map ของยอดรวมแต่ละเลข
     const valueMap = new Map();
+    const topMap = new Map();
+    const bottomMap = new Map();
+
     rows.forEach(r => {
+      topMap.set(r.key, r.topSum);
+      bottomMap.set(r.key, r.bottomSum);
+
       if (valueType === 'top') {
         valueMap.set(r.key, r.topSum);
       } else if (valueType === 'bottom') {
         valueMap.set(r.key, r.bottomSum);
+      } else if (valueType === 'split') {
+        // สำหรับแสดงทั้งบนและล่าง ใช้ยอดรวมในการคำนวณสี
+        valueMap.set(r.key, r.totalSum);
       } else {
         valueMap.set(r.key, r.totalSum);
       }
@@ -434,6 +447,8 @@
     for (let i = 0; i < 100; i++) {
       const key = String(i).padStart(2, '0');
       const value = valueMap.get(key) || 0;
+      const topValue = topMap.get(key) || 0;
+      const bottomValue = bottomMap.get(key) || 0;
       const bgColor = getHeatmapColor(value, maxValue, colorScheme);
       const textColor = getTextColor(bgColor);
 
@@ -443,17 +458,27 @@
       cell.style.color = textColor;
 
       // สร้างโครงสร้าง HTML ภายในเซลล์
-      cell.innerHTML = `
-        <div class="heatmap-cell-number">${key}</div>
-        <div class="heatmap-cell-value">${value > 0 ? money(value) : ''}</div>
-      `;
-
-      if (valueType === 'top') {
-        cell.title = `${key}: บน ${money(value)} บาท`;
-      } else if (valueType === 'bottom') {
-        cell.title = `${key}: ล่าง ${money(value)} บาท`;
+      if (valueType === 'split') {
+        // แสดงบนและล่างแยกกัน
+        cell.innerHTML = `
+          <div class="heatmap-cell-value">${topValue > 0 ? 'บน: ' + money(topValue) : ''}</div>
+          <div class="heatmap-cell-number">${key}</div>
+          <div class="heatmap-cell-value">${bottomValue > 0 ? 'ล่าง: ' + money(bottomValue) : ''}</div>
+        `;
+        cell.title = `${key}: บน ${money(topValue)}, ล่าง ${money(bottomValue)} บาท`;
       } else {
-        cell.title = `${key}: รวม ${money(value)} บาท`;
+        cell.innerHTML = `
+          <div class="heatmap-cell-number">${key}</div>
+          <div class="heatmap-cell-value">${value > 0 ? money(value) : ''}</div>
+        `;
+
+        if (valueType === 'top') {
+          cell.title = `${key}: บน ${money(value)} บาท`;
+        } else if (valueType === 'bottom') {
+          cell.title = `${key}: ล่าง ${money(value)} บาท`;
+        } else {
+          cell.title = `${key}: รวม ${money(value)} บาท`;
+        }
       }
 
       // คลิกเพื่อดูรายละเอียด
@@ -469,7 +494,7 @@
   }
 
   function renderHeatmap() {
-    renderHeatmapGeneric('heatmapGrid', 'total', 'blue');
+    renderHeatmapGeneric('heatmapGrid', 'split', 'blue');
   }
 
   function renderHeatmapTop() {
