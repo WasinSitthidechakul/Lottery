@@ -40,6 +40,7 @@
     .heatmap-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #e5e7eb; position: relative; transition: transform 0.1s; }
     .heatmap-cell-number { font-size: 14px; font-weight: 600; }
     .heatmap-cell-value { font-size: 10px; font-weight: 400; margin-top: 2px; }
+    .heatmap-cell-label { font-style: italic; }
     .heatmap-cell:hover { transform: scale(1.1); z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
     .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; }
     .heatmap-legend-item { display: flex; align-items: center; gap: 4px; }
@@ -162,58 +163,32 @@
     </div>
 
     <div class="heatmap-container">
-      <div class="heatmap-title">Heat Map: ยอดรวม (บน)</div>
-      <div id="heatmapGridTop" class="heatmap-grid"></div>
+      <div class="heatmap-title">Heat Map: ยอดรวมเงินรางวัลทั้งหมด (บน + ล่าง)</div>
+      <div id="heatmapGridPrize" class="heatmap-grid heatmap-grid-large"></div>
       <div class="heatmap-legend">
         <div class="heatmap-legend-item">
           <div class="heatmap-legend-box" style="background: #f3f4f6;"></div>
           <span>0</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #fef3c7;"></div>
+          <div class="heatmap-legend-box" style="background: #f3e8ff;"></div>
           <span>น้อย</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #fbbf24;"></div>
+          <div class="heatmap-legend-box" style="background: #d8b4fe;"></div>
           <span>ปานกลาง</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #f59e0b;"></div>
+          <div class="heatmap-legend-box" style="background: #a855f7;"></div>
           <span>มาก</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #b45309;"></div>
+          <div class="heatmap-legend-box" style="background: #6b21a8;"></div>
           <span>มากที่สุด</span>
         </div>
       </div>
     </div>
 
-    <div class="heatmap-container">
-      <div class="heatmap-title">Heat Map: ยอดรวม (ล่าง)</div>
-      <div id="heatmapGridBottom" class="heatmap-grid"></div>
-      <div class="heatmap-legend">
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #f3f4f6;"></div>
-          <span>0</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #dcfce7;"></div>
-          <span>น้อย</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #86efac;"></div>
-          <span>ปานกลาง</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #22c55e;"></div>
-          <span>มาก</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #15803d;"></div>
-          <span>มากที่สุด</span>
-        </div>
-      </div>
-    </div>
   </div>
 
 <script>
@@ -398,6 +373,13 @@
       if (ratio < 0.6) return '#4ade80';
       if (ratio < 0.8) return '#22c55e';
       return '#15803d';
+    } else if (colorScheme === 'purple') {
+      // สีม่วงสำหรับเงินรางวัล
+      if (ratio < 0.2) return '#f3e8ff';
+      if (ratio < 0.4) return '#d8b4fe';
+      if (ratio < 0.6) return '#a855f7';
+      if (ratio < 0.8) return '#9333ea';
+      return '#6b21a8';
     } else {
       // สีน้ำเงินสำหรับรวม
       if (ratio < 0.2) return '#dbeafe';
@@ -410,7 +392,7 @@
 
   function getTextColor(bgColor) {
     // สีพื้นหลังเข้มจะใช้ตัวอักษรสีขาว
-    const darkColors = ['#3b82f6', '#1e40af', '#b45309', '#15803d', '#22c55e'];
+    const darkColors = ['#3b82f6', '#1e40af', '#b45309', '#15803d', '#22c55e', '#a855f7', '#9333ea', '#6b21a8'];
     return darkColors.includes(bgColor) ? '#ffffff' : '#111827';
   }
 
@@ -434,6 +416,9 @@
       } else if (valueType === 'split') {
         // สำหรับแสดงทั้งบนและล่าง ใช้ยอดรวมในการคำนวณสี
         valueMap.set(r.key, r.totalSum);
+      } else if (valueType === 'prize') {
+        // สำหรับแสดงเงินรางวัล ใช้ยอดรวมเงินรางวัล (บน + ล่าง) * 70
+        valueMap.set(r.key, (r.topSum + r.bottomSum) * 70);
       } else {
         valueMap.set(r.key, r.totalSum);
       }
@@ -461,11 +446,21 @@
       if (valueType === 'split') {
         // แสดงบนและล่างแยกกัน
         cell.innerHTML = `
-          <div class="heatmap-cell-value">${topValue > 0 ? 'บน: ' + money(topValue) : ''}</div>
+          <div class="heatmap-cell-value">${topValue > 0 ? '<span class="heatmap-cell-label">บน:</span> ' + money(topValue) : ''}</div>
           <div class="heatmap-cell-number">${key}</div>
-          <div class="heatmap-cell-value">${bottomValue > 0 ? 'ล่าง: ' + money(bottomValue) : ''}</div>
+          <div class="heatmap-cell-value">${bottomValue > 0 ? '<span class="heatmap-cell-label">ล่าง:</span> ' + money(bottomValue) : ''}</div>
         `;
         cell.title = `${key}: บน ${money(topValue)}, ล่าง ${money(bottomValue)} บาท`;
+      } else if (valueType === 'prize') {
+        // แสดงเงินรางวัลบนและล่างแยกกัน
+        const prizeTop = topValue * 70;
+        const prizeBottom = bottomValue * 70;
+        cell.innerHTML = `
+          <div class="heatmap-cell-value">${prizeTop > 0 ? '<span class="heatmap-cell-label">บน:</span> ' + money(prizeTop) : ''}</div>
+          <div class="heatmap-cell-number">${key}</div>
+          <div class="heatmap-cell-value">${prizeBottom > 0 ? '<span class="heatmap-cell-label">ล่าง:</span> ' + money(prizeBottom) : ''}</div>
+        `;
+        cell.title = `${key}: เงินรางวัล(บน) ${money(prizeTop)}, เงินรางวัล(ล่าง) ${money(prizeBottom)} บาท`;
       } else {
         cell.innerHTML = `
           <div class="heatmap-cell-number">${key}</div>
@@ -497,12 +492,8 @@
     renderHeatmapGeneric('heatmapGrid', 'split', 'blue');
   }
 
-  function renderHeatmapTop() {
-    renderHeatmapGeneric('heatmapGridTop', 'top', 'yellow');
-  }
-
-  function renderHeatmapBottom() {
-    renderHeatmapGeneric('heatmapGridBottom', 'bottom', 'green');
+  function renderHeatmapPrize() {
+    renderHeatmapGeneric('heatmapGridPrize', 'prize', 'purple');
   }
 
   function render() {
@@ -549,10 +540,9 @@
     grandPrizeTopEl.textContent = money(grandTop * 70);
     grandPrizeBottomEl.textContent = money(grandBottom * 70);
 
-    // Render all heatmaps
+    // Render heatmaps
     renderHeatmap();
-    renderHeatmapTop();
-    renderHeatmapBottom();
+    renderHeatmapPrize();
   }
 
   // Validate drawNumberInput to allow only 1 or 2
