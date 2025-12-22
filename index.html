@@ -28,6 +28,7 @@
     .total { font-weight: 700; }
     .twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
     .raw-item { padding: 4px 0; }
+    .raw-item-latest { font-size: 17px; font-weight: 600; }
     .draw-row { margin-bottom: 10px; }
     .delete-btn { background: #ef4444; color: white; border: 1px solid black; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 12px; max-width: 200px; display: inline-block; vertical-align: middle; }
     .delete-btn:hover { background: #dc2626; }
@@ -496,6 +497,24 @@
     renderHeatmapGeneric('heatmapGridPrize', 'prize', 'purple');
   }
 
+  function shortenDraw(draw) {
+    // แปลง "มกราคม 2568 งวด 1" เป็น "ม.ค. 68 งวด 1"
+    const monthMap = {
+      'มกราคม': 'ม.ค.', 'กุมภาพันธ์': 'ก.พ.', 'มีนาคม': 'มี.ค.',
+      'เมษายน': 'เม.ย.', 'พฤษภาคม': 'พ.ค.', 'มิถุนายน': 'มิ.ย.',
+      'กรกฎาคม': 'ก.ค.', 'สิงหาคม': 'ส.ค.', 'กันยายน': 'ก.ย.',
+      'ตุลาคม': 'ต.ค.', 'พฤศจิกายน': 'พ.ย.', 'ธันวาคม': 'ธ.ค.'
+    };
+
+    let result = draw;
+    for (const [full, short] of Object.entries(monthMap)) {
+      result = result.replace(full, short);
+    }
+    // แปลงปี 2568 เป็น 68
+    result = result.replace(/\s(\d{2})(\d{2})\s/g, ' $2 ');
+    return result;
+  }
+
   function render() {
     // Raw list
     if (items.length === 0) {
@@ -507,9 +526,12 @@
       const itemsHtml = displayItems
         .map((it, revIdx) => {
           const idx = items.length - 1 - revIdx;
+          const isLatest = revIdx === 0;
+          const itemClass = isLatest ? 'raw-item raw-item-latest' : 'raw-item';
+          const shortDraw = shortenDraw(it.draw);
           return `
-            <div class="raw-item">
-              <button class="delete-btn" onclick="deleteItem(${idx})">ลบ</button><span><b>${idx + 1}.</b> [${it.draw}] ${it.key} → บน: ${money(it.top)}, ล่าง: ${money(it.bottom)}</span>
+            <div class="${itemClass}">
+              <button class="delete-btn" onclick="deleteItem(${idx})">ลบ</button><span><b>${idx + 1}.</b> [${shortDraw}] ${it.key} → บน: ${money(it.top)}, ล่าง: ${money(it.bottom)}</span>
             </div>
           `;
         })
@@ -597,13 +619,14 @@
 
     // รวบรวมงวดทั้งหมดที่มีในข้อมูล
     const draws = [...new Set(items.map(it => it.draw))].sort();
-    const drawsText = draws.length > 0 ? `งวด: ${draws.join(', ')}\n\n` : '';
+    const drawsText = draws.length > 0 ? `งวด: ${draws.join(', ')}\n` : '';
 
     const text = [
       'สรุปรวมเงินตามตัวเลข',
-      drawsText + 'ตัวเลข\tจำนวนรายการ\tบน\tล่าง\tรวม\tเงินรางวัล(บน)\tเงินรางวัล(ล่าง)',
-      ...rows.map(r => `${r.key}\t${r.count}\t${money(r.topSum)}\t${money(r.bottomSum)}\t${money(r.totalSum)}\t${money(r.topSum * 70)}\t${money(r.bottomSum * 70)}`),
-      `รวมทั้งหมด\t\t\t\t${money(grand)}\t${money(grandTop * 70)}\t${money(grandBottom * 70)}`
+      drawsText,
+      ...rows.map(r => `เลข: ${r.key} / จำนวนรายการ: ${r.count} / บน: ${money(r.topSum)} / ล่าง: ${money(r.bottomSum)} / รวม: ${money(r.totalSum)}`),
+      '',
+      `รวมทั้งหมด / จำนวนรายการทั้งหมด: ${items.length} / บน: ${money(grandTop)} / ล่าง: ${money(grandBottom)} / รวม: ${money(grand)}`
     ].join('\n');
 
     try {
