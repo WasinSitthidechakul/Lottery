@@ -13,8 +13,8 @@
     input, textarea, button { width: 100%; font-size: 18px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
     .row input { padding: 8px; margin-bottom: 0; }
     button { cursor: pointer; border: 0; }
-    .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; margin-bottom: 10px; }
-    .quick-add-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: -8px; grid-column: 1 / -1; }
+    .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; margin-bottom: 34px; }
+    .quick-add-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: -8px; margin-bottom: 24px; grid-column: 1 / -1; }
     .quick-add-btns button { padding: 8px; font-size: 14px; font-weight: 600; background: linear-gradient(to bottom, #ffffff, #f3f4f6); border: 2px solid #9ca3af; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.15s ease; }
     .quick-add-btns button:hover { background: linear-gradient(to bottom, #f9fafb, #e5e7eb); border-color: #6b7280; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transform: translateY(-1px); }
     .quick-add-btns button:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
@@ -30,10 +30,11 @@
     .raw-item { padding: 4px 0; }
     .raw-item-latest { font-size: 17px; font-weight: 600; }
     .draw-row { margin-bottom: 10px; }
-    .delete-btn { background: #ef4444; color: white; border: 1px solid black; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 12px; max-width: 200px; display: inline-block; vertical-align: middle; }
+    .delete-btn { background: #ef4444; color: white; border: 1px solid black; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 12px; width: 100px; display: inline-block; vertical-align: middle; text-align: center; }
     .delete-btn:hover { background: #dc2626; }
     .heatmap-container { margin-top: 24px; }
-    .heatmap-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+    .heatmap-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; flex-wrap: nowrap; }
+    .heatmap-title span { white-space: nowrap; }
     .heatmap-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 600px; }
     .heatmap-grid-large { max-width: 750px; gap: 5px; }
     .heatmap-grid-large .heatmap-cell-number { font-size: 16px; }
@@ -48,14 +49,11 @@
     .heatmap-legend-box { width: 20px; height: 20px; border-radius: 3px; border: 1px solid #ccc; }
     .show-all-btn { background: #3b82f6; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 8px; display: inline-block; border: 0; }
     .show-all-btn:hover { background: #2563eb; }
-    .pair-mode-btn { background: #8b5cf6; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-bottom: 8px; display: inline-block; border: 0; }
+    .pair-mode-btn { background: #8b5cf6; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-block; border: 0; margin-left: 18px; width: 120px; text-align: center; }
     .pair-mode-btn:hover { background: #7c3aed; }
     .pair-mode-btn.active { background: #6d28d9; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-    .heatmap-cell-pair-indicator { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background: #fbbf24; opacity: 0; transition: opacity 0.2s; }
-    .heatmap-cell-double-indicator { position: absolute; top: 2px; left: 2px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid #10b981; opacity: 0; transition: opacity 0.2s; }
-    .pair-mode-active .heatmap-cell-pair-indicator { opacity: 1; }
-    .pair-mode-active .heatmap-cell-double-indicator { opacity: 1; }
     .heatmap-cell.highlight-pair { box-shadow: 0 0 0 3px #fbbf24, 0 0 12px rgba(251, 191, 36, 0.5); z-index: 20; transform: scale(1.05); }
+    .heatmap-cell.highlight-double { box-shadow: 0 0 0 3px #8b5cf6, 0 0 12px rgba(139, 92, 246, 0.5); z-index: 20; transform: scale(1.05); }
     @media (max-width: 720px) {
       .row, .btns, .twoCol { grid-template-columns: 1fr; }
       .heatmap-grid { grid-template-columns: repeat(10, 1fr); gap: 2px; }
@@ -122,10 +120,7 @@
     </div>
 
     <div class="heatmap-container">
-      <div class="heatmap-title">
-        Heat Map: ยอดรวมเงินรางวัลทั้งหมด (บน + ล่าง)
-        <button class="pair-mode-btn" id="pairModeBtnPrize" onclick="togglePairMode('prize')">โหมดแสดงคู่</button>
-      </div>
+      <div class="heatmap-title"><span>Heat Map: ยอดรวมเงินรางวัลทั้งหมด (บน + ล่าง)</span><button class="pair-mode-btn" id="pairModeBtnPrize" onclick="togglePairMode('prize')">เรียงแบบคู่</button></div>
       <div id="heatmapGridPrize" class="heatmap-grid heatmap-grid-large"></div>
       <div class="heatmap-legend">
         <div class="heatmap-legend-item">
@@ -184,10 +179,7 @@
     <div class="muted">Tip: ใส่เลขซ้ำได้ ระบบจะรวมยอดให้อัตโนมัติ</div>
 
     <div class="heatmap-container">
-      <div class="heatmap-title">
-        Heat Map: ยอดรวมทั้งหมด (บน + ล่าง)
-        <button class="pair-mode-btn" id="pairModeBtn" onclick="togglePairMode('total')">โหมดแสดงคู่</button>
-      </div>
+      <div class="heatmap-title"><span>Heat Map: ยอดรวมทั้งหมด (บน + ล่าง)</span><button class="pair-mode-btn" id="pairModeBtn" onclick="togglePairMode('total')">เรียงแบบคู่</button></div>
       <div id="heatmapGrid" class="heatmap-grid heatmap-grid-large"></div>
       <div class="heatmap-legend">
         <div class="heatmap-legend-item">
@@ -404,19 +396,56 @@
   window.togglePairMode = function(heatmapType) {
     pairModeActive[heatmapType] = !pairModeActive[heatmapType];
 
-    const gridId = heatmapType === 'prize' ? 'heatmapGridPrize' : 'heatmapGrid';
     const btnId = heatmapType === 'prize' ? 'pairModeBtnPrize' : 'pairModeBtn';
-    const grid = document.getElementById(gridId);
     const btn = document.getElementById(btnId);
 
     if (pairModeActive[heatmapType]) {
-      grid.classList.add('pair-mode-active');
       btn.classList.add('active');
-      btn.textContent = 'ปิดโหมดแสดงคู่';
+      btn.textContent = 'เรียงแบบปกติ';
     } else {
-      grid.classList.remove('pair-mode-active');
       btn.classList.remove('active');
-      btn.textContent = 'โหมดแสดงคู่';
+      btn.textContent = 'เรียงแบบคู่';
+    }
+
+    // Re-render heat map with new order
+    render();
+  }
+
+  // ฟังก์ชันสำหรับสร้างลำดับการแสดงผล
+  function getDisplayOrder(pairMode) {
+    if (!pairMode) {
+      // ลำดับปกติ: 00, 01, 02, ..., 98, 99
+      return Array.from({ length: 100 }, (_, i) => String(i).padStart(2, '0'));
+    } else {
+      // ลำดับแบบคู่: 00, 01, 10, 02, 20, 03, 30, ..., 11, 22, 33, ..., 99
+      const order = [];
+      const added = new Set();
+
+      // เพิ่มคู่ตัวเลขก่อน (ยกเว้นเลขซ้ำ)
+      for (let i = 0; i < 100; i++) {
+        const key = String(i).padStart(2, '0');
+        if (!added.has(key) && !isDoubleNumber(key)) {
+          order.push(key);
+          added.add(key);
+
+          const pair = getPairNumber(key);
+          if (!added.has(pair)) {
+            order.push(pair);
+            added.add(pair);
+          }
+        }
+      }
+
+      // เพิ่มเลขซ้ำท้ายสุด
+      for (let i = 0; i < 10; i++) {
+        const key = String(i) + String(i);
+        if (!added.has(key)) {
+          order.push(key);
+          added.add(key);
+        }
+      }
+
+      return order;
     }
   }
 
@@ -495,7 +524,7 @@
     return '#d1d5db';
   }
 
-  function renderHeatmapGeneric(gridId, valueType = 'total', colorScheme = 'blue') {
+  function renderHeatmapGeneric(gridId, valueType = 'total', colorScheme = 'blue', pairMode = false) {
     const heatmapGrid = document.getElementById(gridId);
     const { rows } = summarize();
 
@@ -526,10 +555,10 @@
     // หาค่าสูงสุด
     const maxValue = Math.max(...Array.from(valueMap.values()), 1);
 
-    // สร้างเซลล์ 00-99
+    // สร้างเซลล์ตามลำดับที่กำหนด
+    const displayOrder = getDisplayOrder(pairMode);
     heatmapGrid.innerHTML = '';
-    for (let i = 0; i < 100; i++) {
-      const key = String(i).padStart(2, '0');
+    for (const key of displayOrder) {
       const value = valueMap.get(key) || 0;
       const topValue = topMap.get(key) || 0;
       const bottomValue = bottomMap.get(key) || 0;
@@ -544,13 +573,6 @@
       cell.style.borderColor = borderColor;
       cell.style.borderWidth = '3px';
       cell.dataset.key = key;
-
-      // เพิ่ม indicators สำหรับคู่ตัวเลขและเลขซ้ำ
-      const pairIndicator = document.createElement('div');
-      pairIndicator.className = 'heatmap-cell-pair-indicator';
-
-      const doubleIndicator = document.createElement('div');
-      doubleIndicator.className = 'heatmap-cell-double-indicator';
 
       // สร้างโครงสร้าง HTML ภายในเซลล์
       if (valueType === 'split') {
@@ -596,7 +618,11 @@
 
       // เพิ่ม hover effect เพื่อแสดงคู่ตัวเลข
       cell.addEventListener('mouseenter', () => {
-        if (!isDoubleNumber(key)) {
+        if (isDoubleNumber(key)) {
+          // เลขซ้ำใช้สีเขียว
+          cell.classList.add('highlight-double');
+        } else {
+          // เลขคู่ใช้สีทอง
           const pairKey = getPairNumber(key);
           const pairCell = heatmapGrid.querySelector(`[data-key="${pairKey}"]`);
           if (pairCell) {
@@ -607,7 +633,9 @@
       });
 
       cell.addEventListener('mouseleave', () => {
-        if (!isDoubleNumber(key)) {
+        if (isDoubleNumber(key)) {
+          cell.classList.remove('highlight-double');
+        } else {
           const pairKey = getPairNumber(key);
           const pairCell = heatmapGrid.querySelector(`[data-key="${pairKey}"]`);
           if (pairCell) {
@@ -617,23 +645,16 @@
         }
       });
 
-      // เพิ่ม indicators
-      if (isDoubleNumber(key)) {
-        cell.appendChild(doubleIndicator);
-      } else {
-        cell.appendChild(pairIndicator);
-      }
-
       heatmapGrid.appendChild(cell);
     }
   }
 
   function renderHeatmap() {
-    renderHeatmapGeneric('heatmapGrid', 'split', 'blue');
+    renderHeatmapGeneric('heatmapGrid', 'split', 'blue', pairModeActive.total);
   }
 
   function renderHeatmapPrize() {
-    renderHeatmapGeneric('heatmapGridPrize', 'prize', 'purple');
+    renderHeatmapGeneric('heatmapGridPrize', 'prize', 'purple', pairModeActive.prize);
   }
 
   function shortenDraw(draw) {
