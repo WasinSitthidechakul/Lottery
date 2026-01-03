@@ -48,6 +48,14 @@
     .heatmap-legend-box { width: 20px; height: 20px; border-radius: 3px; border: 1px solid #ccc; }
     .show-all-btn { background: #3b82f6; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 8px; display: inline-block; border: 0; }
     .show-all-btn:hover { background: #2563eb; }
+    .pair-mode-btn { background: #8b5cf6; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-bottom: 8px; display: inline-block; border: 0; }
+    .pair-mode-btn:hover { background: #7c3aed; }
+    .pair-mode-btn.active { background: #6d28d9; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+    .heatmap-cell-pair-indicator { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background: #fbbf24; opacity: 0; transition: opacity 0.2s; }
+    .heatmap-cell-double-indicator { position: absolute; top: 2px; left: 2px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid #10b981; opacity: 0; transition: opacity 0.2s; }
+    .pair-mode-active .heatmap-cell-pair-indicator { opacity: 1; }
+    .pair-mode-active .heatmap-cell-double-indicator { opacity: 1; }
+    .heatmap-cell.highlight-pair { box-shadow: 0 0 0 3px #fbbf24, 0 0 12px rgba(251, 191, 36, 0.5); z-index: 20; transform: scale(1.05); }
     @media (max-width: 720px) {
       .row, .btns, .twoCol { grid-template-columns: 1fr; }
       .heatmap-grid { grid-template-columns: repeat(10, 1fr); gap: 2px; }
@@ -91,9 +99,9 @@
         <input id="bottomInput" inputmode="decimal" placeholder="เช่น 100" />
       </div>
       <div class="quick-add-btns">
+        <button type="button" onclick="addToBothInputs(5)">+5</button>
         <button type="button" onclick="addToBothInputs(10)">+10</button>
         <button type="button" onclick="addToBothInputs(20)">+20</button>
-        <button type="button" onclick="addToBothInputs(25)">+25</button>
         <button type="button" onclick="addToBothInputs(30)">+30</button>
         <button type="button" onclick="addToBothInputs(50)">+50</button>
         <button type="button" onclick="addToBothInputs(100)">+100</button>
@@ -113,58 +121,11 @@
       <div id="rawList" class="muted">ยังไม่มีรายการ</div>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>ตัวเลข</th>
-          <th>จำนวนรายการ</th>
-          <th>ยอดรวม</th>
-          <th>เงินรางวัล (บน)</th>
-          <th>เงินรางวัล (ล่าง)</th>
-        </tr>
-      </thead>
-      <tbody id="summaryBody"></tbody>
-      <tfoot>
-        <tr>
-          <td colspan="2" class="total">รวมทั้งหมด</td>
-          <td class="total" id="grandTotal">0</td>
-          <td class="total" id="grandPrizeTop">0</td>
-          <td class="total" id="grandPrizeBottom">0</td>
-        </tr>
-      </tfoot>
-    </table>
-
-    <div class="muted">Tip: ใส่เลขซ้ำได้ ระบบจะรวมยอดให้อัตโนมัติ</div>
-
     <div class="heatmap-container">
-      <div class="heatmap-title">Heat Map: ยอดรวมทั้งหมด (บน + ล่าง)</div>
-      <div id="heatmapGrid" class="heatmap-grid heatmap-grid-large"></div>
-      <div class="heatmap-legend">
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #f3f4f6;"></div>
-          <span>0</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #dbeafe;"></div>
-          <span>น้อย</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #93c5fd;"></div>
-          <span>ปานกลาง</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #3b82f6;"></div>
-          <span>มาก</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #1e40af;"></div>
-          <span>มากที่สุด</span>
-        </div>
+      <div class="heatmap-title">
+        Heat Map: ยอดรวมเงินรางวัลทั้งหมด (บน + ล่าง)
+        <button class="pair-mode-btn" id="pairModeBtnPrize" onclick="togglePairMode('prize')">โหมดแสดงคู่</button>
       </div>
-    </div>
-
-    <div class="heatmap-container">
-      <div class="heatmap-title">Heat Map: ยอดรวมเงินรางวัลทั้งหมด (บน + ล่าง)</div>
       <div id="heatmapGridPrize" class="heatmap-grid heatmap-grid-large"></div>
       <div class="heatmap-legend">
         <div class="heatmap-legend-item">
@@ -172,19 +133,85 @@
           <span>0</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #f3e8ff;"></div>
+          <div class="heatmap-legend-box" style="background: #ffe4e6;"></div>
+          <span>>0-5K</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #fda4af;"></div>
+          <span>>5K-10K</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #fb7185;"></div>
+          <span>>10K-20K</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #f43f5e;"></div>
+          <span>>20K-40K</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #e11d48;"></div>
+          <span>>40K-100K</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #be123c;"></div>
+          <span>>100K</span>
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ตัวเลข</th>
+          <th>จำนวนรายการ</th>
+          <th>ยอดรวม (บน)</th>
+          <th>ยอดรวม (ล่าง)</th>
+          <th>ยอดรวมทั้งหมด</th>
+        </tr>
+      </thead>
+      <tbody id="summaryBody"></tbody>
+      <tfoot>
+        <tr>
+          <td class="total">รวมทั้งหมด</td>
+          <td class="total" id="totalCount">0</td>
+          <td class="total" id="grandPrizeTop">0</td>
+          <td class="total" id="grandPrizeBottom">0</td>
+          <td class="total" id="grandTotal">0</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="muted">Tip: ใส่เลขซ้ำได้ ระบบจะรวมยอดให้อัตโนมัติ</div>
+
+    <div class="heatmap-container">
+      <div class="heatmap-title">
+        Heat Map: ยอดรวมทั้งหมด (บน + ล่าง)
+        <button class="pair-mode-btn" id="pairModeBtn" onclick="togglePairMode('total')">โหมดแสดงคู่</button>
+      </div>
+      <div id="heatmapGrid" class="heatmap-grid heatmap-grid-large"></div>
+      <div class="heatmap-legend">
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #f3f4f6;"></div>
+          <span>0</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #d1fae5;"></div>
           <span>น้อย</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #d8b4fe;"></div>
+          <div class="heatmap-legend-box" style="background: #6ee7b7;"></div>
           <span>ปานกลาง</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #a855f7;"></div>
+          <div class="heatmap-legend-box" style="background: #34d399;"></div>
+          <span>ปานกลาง-มาก</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-box" style="background: #10b981;"></div>
           <span>มาก</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #6b21a8;"></div>
+          <div class="heatmap-legend-box" style="background: #059669;"></div>
           <span>มากที่สุด</span>
         </div>
       </div>
@@ -197,6 +224,8 @@
   const STORAGE_KEY = 'lottery_items';
   const items = loadFromStorage();
   let showAllItems = false;
+  let showAllTableRows = false;
+  let pairModeActive = { prize: false, total: false };
 
   const drawNumberInput = document.getElementById('drawNumberInput');
   const monthSelect = document.getElementById('monthSelect');
@@ -207,9 +236,10 @@
   const addBtn = document.getElementById('addBtn');
   const clearBtn = document.getElementById('clearBtn');
   const summaryBody = document.getElementById('summaryBody');
-  const grandTotalEl = document.getElementById('grandTotal');
+  const totalCountEl = document.getElementById('totalCount');
   const grandPrizeTopEl = document.getElementById('grandPrizeTop');
   const grandPrizeBottomEl = document.getElementById('grandPrizeBottom');
+  const grandTotalEl = document.getElementById('grandTotal');
   const rawList = document.getElementById('rawList');
   const exportBtn = document.getElementById('exportBtn');
 
@@ -356,12 +386,46 @@
     render();
   }
 
+  window.toggleShowAllTable = function() {
+    showAllTableRows = !showAllTableRows;
+    render();
+  }
+
+  // ฟังก์ชันสำหรับหาตัวเลขคู่
+  function getPairNumber(key) {
+    return key.split('').reverse().join('');
+  }
+
+  // ตรวจสอบว่าเป็นเลขซ้ำหรือไม่ (11, 22, 33, ...)
+  function isDoubleNumber(key) {
+    return key[0] === key[1];
+  }
+
+  window.togglePairMode = function(heatmapType) {
+    pairModeActive[heatmapType] = !pairModeActive[heatmapType];
+
+    const gridId = heatmapType === 'prize' ? 'heatmapGridPrize' : 'heatmapGrid';
+    const btnId = heatmapType === 'prize' ? 'pairModeBtnPrize' : 'pairModeBtn';
+    const grid = document.getElementById(gridId);
+    const btn = document.getElementById(btnId);
+
+    if (pairModeActive[heatmapType]) {
+      grid.classList.add('pair-mode-active');
+      btn.classList.add('active');
+      btn.textContent = 'ปิดโหมดแสดงคู่';
+    } else {
+      grid.classList.remove('pair-mode-active');
+      btn.classList.remove('active');
+      btn.textContent = 'โหมดแสดงคู่';
+    }
+  }
+
   function getHeatmapColor(value, maxValue, colorScheme = 'blue') {
     if (value === 0) return '#f3f4f6';
-    const ratio = value / maxValue;
 
     if (colorScheme === 'yellow') {
       // สีเหลือง-ส้มสำหรับ "บน"
+      const ratio = value / maxValue;
       if (ratio < 0.2) return '#fef3c7';
       if (ratio < 0.4) return '#fde68a';
       if (ratio < 0.6) return '#fbbf24';
@@ -369,32 +433,66 @@
       return '#b45309';
     } else if (colorScheme === 'green') {
       // สีเขียวสำหรับ "ล่าง"
+      const ratio = value / maxValue;
       if (ratio < 0.2) return '#dcfce7';
       if (ratio < 0.4) return '#86efac';
       if (ratio < 0.6) return '#4ade80';
       if (ratio < 0.8) return '#22c55e';
       return '#15803d';
     } else if (colorScheme === 'purple') {
-      // สีม่วงสำหรับเงินรางวัล
-      if (ratio < 0.2) return '#f3e8ff';
-      if (ratio < 0.4) return '#d8b4fe';
-      if (ratio < 0.6) return '#a855f7';
-      if (ratio < 0.8) return '#9333ea';
-      return '#6b21a8';
+      // สีชมพู-แดงสำหรับเงินรางวัล - 7 ระดับตามยอดรวม (ความแตกต่างชัดเจน)
+      if (value <= 5000) return '#ffe4e6';       // >0-5,000 (ชมพูอ่อนมาก)
+      if (value <= 10000) return '#fda4af';      // >5,000-10,000 (ชมพูอ่อน)
+      if (value <= 20000) return '#fb7185';      // >10,000-20,000 (ชมพู)
+      if (value <= 40000) return '#f43f5e';      // >20,000-40,000 (แดงชมพู)
+      if (value <= 100000) return '#e11d48';     // >40,000-100,000 (แดงเข้ม)
+      return '#be123c';                          // >100,000 (แดงเข้มสุด)
     } else {
-      // สีน้ำเงินสำหรับรวม
-      if (ratio < 0.2) return '#dbeafe';
-      if (ratio < 0.4) return '#93c5fd';
-      if (ratio < 0.6) return '#60a5fa';
-      if (ratio < 0.8) return '#3b82f6';
-      return '#1e40af';
+      // สีเขียว-น้ำเงินสำหรับรวม (โทนเย็น)
+      const ratio = value / maxValue;
+      if (ratio < 0.2) return '#d1fae5';         // น้อย (เขียวอ่อนมาก)
+      if (ratio < 0.4) return '#6ee7b7';         // ปานกลาง (เขียวอ่อน)
+      if (ratio < 0.6) return '#34d399';         // ปานกลาง-มาก (เขียวกลาง)
+      if (ratio < 0.8) return '#10b981';         // มาก (เขียวเข้ม)
+      return '#059669';                          // มากที่สุด (เขียวเข้มสุด)
     }
   }
 
   function getTextColor(bgColor) {
     // สีพื้นหลังเข้มจะใช้ตัวอักษรสีขาว
-    const darkColors = ['#3b82f6', '#1e40af', '#b45309', '#15803d', '#22c55e', '#a855f7', '#9333ea', '#6b21a8'];
+    const darkColors = ['#3b82f6', '#1e40af', '#b45309', '#15803d', '#22c55e', '#a855f7', '#9333ea', '#6b21a8', '#c084fc', '#7c3aed',
+                        '#ec4899', '#db2777', '#be185d', '#10b981', '#059669',
+                        '#f43f5e', '#e11d48', '#be123c'];
     return darkColors.includes(bgColor) ? '#ffffff' : '#111827';
+  }
+
+  function getBorderColor(bgColor, colorScheme) {
+    // สำหรับ Heat Map เงินรางวัล (ชมพู-แดง) ให้เส้นขอบเข้มกว่าพื้นหลัง
+    if (colorScheme === 'purple') {
+      const borderMap = {
+        '#f3f4f6': '#d1d5db',  // 0
+        '#ffe4e6': '#fecdd3',  // >0-5K
+        '#fda4af': '#fb7185',  // >5K-10K
+        '#fb7185': '#f43f5e',  // >10K-20K
+        '#f43f5e': '#e11d48',  // >20K-40K
+        '#e11d48': '#be123c',  // >40K-100K
+        '#be123c': '#9f1239'   // >100K
+      };
+      return borderMap[bgColor] || '#d1d5db';
+    } else if (colorScheme === 'blue') {
+      // สำหรับ Heat Map ยอดรวม (เขียว) ให้เส้นขอบเข้มกว่าพื้นหลัง
+      const borderMap = {
+        '#f3f4f6': '#d1d5db',  // 0
+        '#d1fae5': '#a7f3d0',  // น้อย
+        '#6ee7b7': '#34d399',  // ปานกลาง
+        '#34d399': '#10b981',  // ปานกลาง-มาก
+        '#10b981': '#059669',  // มาก
+        '#059669': '#047857'   // มากที่สุด
+      };
+      return borderMap[bgColor] || '#d1d5db';
+    }
+    // สำหรับ Heat Map อื่นๆ
+    return '#d1d5db';
   }
 
   function renderHeatmapGeneric(gridId, valueType = 'total', colorScheme = 'blue') {
@@ -437,19 +535,30 @@
       const bottomValue = bottomMap.get(key) || 0;
       const bgColor = getHeatmapColor(value, maxValue, colorScheme);
       const textColor = getTextColor(bgColor);
+      const borderColor = getBorderColor(bgColor, colorScheme, key);
 
       const cell = document.createElement('div');
       cell.className = 'heatmap-cell';
       cell.style.backgroundColor = bgColor;
       cell.style.color = textColor;
+      cell.style.borderColor = borderColor;
+      cell.style.borderWidth = '3px';
+      cell.dataset.key = key;
+
+      // เพิ่ม indicators สำหรับคู่ตัวเลขและเลขซ้ำ
+      const pairIndicator = document.createElement('div');
+      pairIndicator.className = 'heatmap-cell-pair-indicator';
+
+      const doubleIndicator = document.createElement('div');
+      doubleIndicator.className = 'heatmap-cell-double-indicator';
 
       // สร้างโครงสร้าง HTML ภายในเซลล์
       if (valueType === 'split') {
         // แสดงบนและล่างแยกกัน
         cell.innerHTML = `
-          <div class="heatmap-cell-value">${topValue > 0 ? '<span class="heatmap-cell-label">บน:</span> ' + money(topValue) : ''}</div>
+          <div class="heatmap-cell-value">${topValue > 0 ? '<span class="heatmap-cell-label">บน</span> ' + money(topValue) : ''}</div>
           <div class="heatmap-cell-number">${key}</div>
-          <div class="heatmap-cell-value">${bottomValue > 0 ? '<span class="heatmap-cell-label">ล่าง:</span> ' + money(bottomValue) : ''}</div>
+          <div class="heatmap-cell-value">${bottomValue > 0 ? '<span class="heatmap-cell-label">ล่าง</span> ' + money(bottomValue) : ''}</div>
         `;
         cell.title = `${key}: บน ${money(topValue)}, ล่าง ${money(bottomValue)} บาท`;
       } else if (valueType === 'prize') {
@@ -457,9 +566,9 @@
         const prizeTop = topValue * 70;
         const prizeBottom = bottomValue * 70;
         cell.innerHTML = `
-          <div class="heatmap-cell-value">${prizeTop > 0 ? '<span class="heatmap-cell-label">บน:</span> ' + money(prizeTop) : ''}</div>
+          <div class="heatmap-cell-value">${prizeTop > 0 ? '<span class="heatmap-cell-label">บน</span> ' + money(prizeTop) : ''}</div>
           <div class="heatmap-cell-number">${key}</div>
-          <div class="heatmap-cell-value">${prizeBottom > 0 ? '<span class="heatmap-cell-label">ล่าง:</span> ' + money(prizeBottom) : ''}</div>
+          <div class="heatmap-cell-value">${prizeBottom > 0 ? '<span class="heatmap-cell-label">ล่าง</span> ' + money(prizeBottom) : ''}</div>
         `;
         cell.title = `${key}: เงินรางวัล(บน) ${money(prizeTop)}, เงินรางวัล(ล่าง) ${money(prizeBottom)} บาท`;
       } else {
@@ -484,6 +593,36 @@
           alert(`หมายเลข: ${key}\nจำนวนรายการ: ${detail.count}\nบน: ${money(detail.topSum)}\nล่าง: ${money(detail.bottomSum)}\nรวม: ${money(detail.totalSum)}\nเงินรางวัล(บน): ${money(detail.topSum * 70)}\nเงินรางวัล(ล่าง): ${money(detail.bottomSum * 70)}`);
         }
       });
+
+      // เพิ่ม hover effect เพื่อแสดงคู่ตัวเลข
+      cell.addEventListener('mouseenter', () => {
+        if (!isDoubleNumber(key)) {
+          const pairKey = getPairNumber(key);
+          const pairCell = heatmapGrid.querySelector(`[data-key="${pairKey}"]`);
+          if (pairCell) {
+            cell.classList.add('highlight-pair');
+            pairCell.classList.add('highlight-pair');
+          }
+        }
+      });
+
+      cell.addEventListener('mouseleave', () => {
+        if (!isDoubleNumber(key)) {
+          const pairKey = getPairNumber(key);
+          const pairCell = heatmapGrid.querySelector(`[data-key="${pairKey}"]`);
+          if (pairCell) {
+            cell.classList.remove('highlight-pair');
+            pairCell.classList.remove('highlight-pair');
+          }
+        }
+      });
+
+      // เพิ่ม indicators
+      if (isDoubleNumber(key)) {
+        cell.appendChild(doubleIndicator);
+      } else {
+        cell.appendChild(pairIndicator);
+      }
 
       heatmapGrid.appendChild(cell);
     }
@@ -548,19 +687,31 @@
 
     // Summary
     const { rows, grand, grandTop, grandBottom } = summarize();
-    summaryBody.innerHTML = rows.map(r => `
+    const displayRows = showAllTableRows ? rows : rows.slice(0, 5);
+
+    summaryBody.innerHTML = displayRows.map(r => `
       <tr>
         <td>${r.key}</td>
         <td>${r.count}</td>
-        <td>บน: ${money(r.topSum)}<br>ล่าง: ${money(r.bottomSum)}<br>รวม: ${money(r.totalSum)}</td>
-        <td>${money(r.topSum * 70)}</td>
-        <td>${money(r.bottomSum * 70)}</td>
+        <td>${money(r.topSum)}<br><small style="color: #6b7280;">รางวัล: ${money(r.topSum * 70)}</small></td>
+        <td>${money(r.bottomSum)}<br><small style="color: #6b7280;">รางวัล: ${money(r.bottomSum * 70)}</small></td>
+        <td>${money(r.totalSum)}</td>
       </tr>
     `).join('');
 
+    // เพิ่มปุ่มแสดง/ซ่อนแถวตาราง
+    if (rows.length > 5) {
+      const toggleButton = showAllTableRows
+        ? `<tr><td colspan="5" style="text-align: center; padding: 8px;"><button class="show-all-btn" onclick="toggleShowAllTable()">ย่อตาราง</button></td></tr>`
+        : `<tr><td colspan="5" style="text-align: center; padding: 8px;"><button class="show-all-btn" onclick="toggleShowAllTable()">ดูทั้งหมด (${rows.length} ตัวเลข)</button></td></tr>`;
+      summaryBody.innerHTML += toggleButton;
+    }
+
+    // อัพเดทยอดรวมใน footer - แสดงเฉพาะยอดรวม ไม่แสดงเงินรางวัล
+    totalCountEl.textContent = items.length;
+    grandPrizeTopEl.textContent = money(grandTop);
+    grandPrizeBottomEl.textContent = money(grandBottom);
     grandTotalEl.textContent = money(grand);
-    grandPrizeTopEl.textContent = money(grandTop * 70);
-    grandPrizeBottomEl.textContent = money(grandBottom * 70);
 
     // Render heatmaps
     renderHeatmap();
