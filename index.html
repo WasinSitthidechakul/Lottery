@@ -56,9 +56,11 @@
     .heatmap-cell.highlight-double { box-shadow: 0 0 0 3px #8b5cf6, 0 0 12px rgba(139, 92, 246, 0.5); z-index: 20; transform: scale(1.05); }
     @media (max-width: 720px) {
       .row, .btns, .twoCol { grid-template-columns: 1fr; }
-      .heatmap-grid { grid-template-columns: repeat(10, 1fr); gap: 2px; }
+      .heatmap-grid { grid-template-columns: repeat(10, 1fr); gap: 2px; max-height: 500px; }
       .heatmap-cell-number { font-size: 10px; }
       .heatmap-cell-value { font-size: 7px; margin-top: 1px; }
+      .heatmap-cell.highlight-pair { box-shadow: 0 0 0 2px #fbbf24, 0 0 8px rgba(251, 191, 36, 0.5); z-index: 20; transform: scale(1.05); }
+      .heatmap-cell.highlight-double { box-shadow: 0 0 0 2px #8b5cf6, 0 0 8px rgba(139, 92, 246, 0.5); z-index: 20; transform: scale(1.05); }
     }
   </style>
 </head>
