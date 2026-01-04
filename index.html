@@ -468,13 +468,13 @@
       if (ratio < 0.6) return '#4ade80';
       if (ratio < 0.8) return '#22c55e';
       return '#15803d';
-    } else if (colorScheme === 'purple') {
+    } else if (colorScheme === 'red') {
       // สีชมพู-แดงสำหรับเงินรางวัล - 7 ระดับตามยอดรวม (ความแตกต่างชัดเจน)
-      if (value <= 5000) return '#ffe4e6';       // >0-5,000 (ชมพูอ่อนมาก)
-      if (value <= 10000) return '#fda4af';      // >5,000-10,000 (ชมพูอ่อน)
-      if (value <= 20000) return '#fb7185';      // >10,000-20,000 (ชมพู)
-      if (value <= 40000) return '#f43f5e';      // >20,000-40,000 (แดงชมพู)
-      if (value <= 100000) return '#e11d48';     // >40,000-100,000 (แดงเข้ม)
+      if (value <= 10000) return '#ffe4e6';       // >0-5,000 (ชมพูอ่อนมาก)
+      if (value <= 20000) return '#fda4af';      // >5,000-10,000 (ชมพูอ่อน)
+      if (value <= 40000) return '#fb7185';      // >10,000-20,000 (ชมพู)
+      if (value <= 80000) return '#f43f5e';      // >20,000-40,000 (แดงชมพู)
+      if (value <= 200000) return '#e11d48';     // >40,000-100,000 (แดงเข้ม)
       return '#be123c';                          // >100,000 (แดงเข้มสุด)
     } else {
       // สีเขียว-น้ำเงินสำหรับรวม (โทนเย็น)
@@ -497,7 +497,7 @@
 
   function getBorderColor(bgColor, colorScheme) {
     // สำหรับ Heat Map เงินรางวัล (ชมพู-แดง) ให้เส้นขอบเข้มกว่าพื้นหลัง
-    if (colorScheme === 'purple') {
+    if (colorScheme === 'red') {
       const borderMap = {
         '#f3f4f6': '#d1d5db',  // 0
         '#ffe4e6': '#fecdd3',  // >0-5K
@@ -654,7 +654,7 @@
   }
 
   function renderHeatmapPrize() {
-    renderHeatmapGeneric('heatmapGridPrize', 'prize', 'purple', pairModeActive.prize);
+    renderHeatmapGeneric('heatmapGridPrize', 'prize', 'red', pairModeActive.prize);
   }
 
   function shortenDraw(draw) {
