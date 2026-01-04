@@ -44,7 +44,7 @@
     .heatmap-cell-value { font-size: 10px; font-weight: 400; margin-top: 2px; }
     .heatmap-cell-label { font-style: italic; }
     .heatmap-cell:hover { transform: scale(1.1); z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-    .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; }
+    .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; clear: both; position: relative; }
     .heatmap-legend-item { display: flex; align-items: center; gap: 4px; }
     .heatmap-legend-box { width: 20px; height: 20px; border-radius: 3px; border: 1px solid #ccc; }
     .show-all-btn { background: #3b82f6; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 8px; display: inline-block; border: 0; }
@@ -52,15 +52,15 @@
     .pair-mode-btn { background: #8b5cf6; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-block; border: 0; margin-left: 18px; width: 120px; text-align: center; }
     .pair-mode-btn:hover { background: #7c3aed; }
     .pair-mode-btn.active { background: #6d28d9; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-    .heatmap-cell.highlight-pair { box-shadow: 0 0 0 3px #fbbf24, 0 0 12px rgba(251, 191, 36, 0.5); z-index: 20; transform: scale(1.05); }
-    .heatmap-cell.highlight-double { box-shadow: 0 0 0 3px #8b5cf6, 0 0 12px rgba(139, 92, 246, 0.5); z-index: 20; transform: scale(1.05); }
+    .heatmap-cell.highlight-pair { box-shadow: 0 0 0 3px #fbbf24, 0 0 12px rgba(251, 191, 36, 0.5); z-index: 20; }
+    .heatmap-cell.highlight-double { box-shadow: 0 0 0 3px #8b5cf6, 0 0 12px rgba(139, 92, 246, 0.5); z-index: 20; }
     @media (max-width: 720px) {
       .row, .btns, .twoCol { grid-template-columns: 1fr; }
-      .heatmap-grid { grid-template-columns: repeat(10, 1fr); gap: 2px; max-height: 200px; }
+      .heatmap-grid { grid-template-columns: repeat(10, 1fr); gap: 2px; max-height: 500px; }
       .heatmap-cell-number { font-size: 10px; }
       .heatmap-cell-value { font-size: 7px; margin-top: 1px; }
-      .heatmap-cell.highlight-pair { box-shadow: 0 0 0 2px #fbbf24, 0 0 8px rgba(251, 191, 36, 0.5); z-index: 20; transform: scale(1.05); }
-      .heatmap-cell.highlight-double { box-shadow: 0 0 0 2px #8b5cf6, 0 0 8px rgba(139, 92, 246, 0.5); z-index: 20; transform: scale(1.05); }
+      .heatmap-cell.highlight-pair { box-shadow: 0 0 0 2px #fbbf24, 0 0 8px rgba(251, 191, 36, 0.5); z-index: 20; }
+      .heatmap-cell.highlight-double { box-shadow: 0 0 0 2px #8b5cf6, 0 0 8px rgba(139, 92, 246, 0.5); z-index: 20; }
     }
   </style>
 </head>
@@ -582,20 +582,24 @@
       // สร้างโครงสร้าง HTML ภายในเซลล์
       if (valueType === 'split') {
         // แสดงบนและล่างแยกกัน
+        // ถ้าค่าเกิน 99,999 ให้ลบ label "บน" "ล่าง" ออก
+        const showLabel = topValue <= 99999 && bottomValue <= 99999;
         cell.innerHTML = `
-          <div class="heatmap-cell-value">${topValue > 0 ? '<span class="heatmap-cell-label">บน</span> ' + money(topValue) : ''}</div>
+          <div class="heatmap-cell-value">${topValue > 0 ? (showLabel ? '<span class="heatmap-cell-label">บน</span> ' : '') + money(topValue) : ''}</div>
           <div class="heatmap-cell-number">${key}</div>
-          <div class="heatmap-cell-value">${bottomValue > 0 ? '<span class="heatmap-cell-label">ล่าง</span> ' + money(bottomValue) : ''}</div>
+          <div class="heatmap-cell-value">${bottomValue > 0 ? (showLabel ? '<span class="heatmap-cell-label">ล่าง</span> ' : '') + money(bottomValue) : ''}</div>
         `;
         cell.title = `${key}: บน ${money(topValue)}, ล่าง ${money(bottomValue)} บาท`;
       } else if (valueType === 'prize') {
         // แสดงเงินรางวัลบนและล่างแยกกัน
         const prizeTop = topValue * 70;
         const prizeBottom = bottomValue * 70;
+        // ถ้าค่าเงินรางวัลเกิน 100,000 ให้ลบ label "บน" "ล่าง" ออก
+        const showLabel = prizeTop <= 99999 && prizeBottom <= 99999;
         cell.innerHTML = `
-          <div class="heatmap-cell-value">${prizeTop > 0 ? '<span class="heatmap-cell-label">บน</span> ' + money(prizeTop) : ''}</div>
+          <div class="heatmap-cell-value">${prizeTop > 0 ? (showLabel ? '<span class="heatmap-cell-label">บน</span> ' : '') + money(prizeTop) : ''}</div>
           <div class="heatmap-cell-number">${key}</div>
-          <div class="heatmap-cell-value">${prizeBottom > 0 ? '<span class="heatmap-cell-label">ล่าง</span> ' + money(prizeBottom) : ''}</div>
+          <div class="heatmap-cell-value">${prizeBottom > 0 ? (showLabel ? '<span class="heatmap-cell-label">ล่าง</span> ' : '') + money(prizeBottom) : ''}</div>
         `;
         cell.title = `${key}: เงินรางวัล(บน) ${money(prizeTop)}, เงินรางวัล(ล่าง) ${money(prizeBottom)} บาท`;
       } else {
