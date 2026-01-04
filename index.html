@@ -35,7 +35,7 @@
     .heatmap-container { margin-top: 24px; }
     .heatmap-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; flex-wrap: nowrap; }
     .heatmap-title span { white-space: nowrap; }
-    .heatmap-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 600px; }
+    .heatmap-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 600px; max-height: 900px; }
     .heatmap-grid-large { max-width: 750px; gap: 5px; }
     .heatmap-grid-large .heatmap-cell-number { font-size: 16px; }
     .heatmap-grid-large .heatmap-cell-value { font-size: 11px; }
@@ -124,31 +124,31 @@
       <div id="heatmapGridPrize" class="heatmap-grid heatmap-grid-large"></div>
       <div class="heatmap-legend">
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #f3f4f6;"></div>
+          <div class="heatmap-legend-box" style="background: #f3f4f6; border: 3px solid #d1d5db;"></div>
           <span>0</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #ffe4e6;"></div>
+          <div class="heatmap-legend-box" style="background: #f3f4f6; border: 3px solid #9ca3af;"></div>
           <span>>0-5K</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #fda4af;"></div>
+          <div class="heatmap-legend-box" style="background: #fecaca; border: 3px solid #fca5a5;"></div>
           <span>>5K-10K</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #fb7185;"></div>
+          <div class="heatmap-legend-box" style="background: #fca5a5; border: 3px solid #f87171;"></div>
           <span>>10K-20K</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #f43f5e;"></div>
+          <div class="heatmap-legend-box" style="background: #f87171; border: 3px solid #ef4444; color: #ffffff;"></div>
           <span>>20K-40K</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #e11d48;"></div>
+          <div class="heatmap-legend-box" style="background: #ef4444; border: 3px solid #dc2626; color: #ffffff;"></div>
           <span>>40K-100K</span>
         </div>
         <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #be123c;"></div>
+          <div class="heatmap-legend-box" style="background: #b91c1c; border: 3px solid #991b1b; color: #ffffff;"></div>
           <span>>100K</span>
         </div>
       </div>
@@ -470,12 +470,12 @@
       return '#15803d';
     } else if (colorScheme === 'red') {
       // สีชมพู-แดงสำหรับเงินรางวัล - 7 ระดับตามยอดรวม (ความแตกต่างชัดเจน)
-      if (value <= 10000) return '#ffe4e6';       // >0-5,000 (ชมพูอ่อนมาก)
-      if (value <= 20000) return '#fda4af';      // >5,000-10,000 (ชมพูอ่อน)
-      if (value <= 40000) return '#fb7185';      // >10,000-20,000 (ชมพู)
-      if (value <= 80000) return '#f43f5e';      // >20,000-40,000 (แดงชมพู)
-      if (value <= 200000) return '#e11d48';     // >40,000-100,000 (แดงเข้ม)
-      return '#be123c';                          // >100,000 (แดงเข้มสุด)
+      if (value <= 10000) return '#f3f4f6';      // >0-5,000 (สีเทาอ่อน)
+      if (value <= 20000) return '#fecaca';      // >5,000-10,000 (ชมพูอ่อน)
+      if (value <= 40000) return '#fca5a5';      // >10,000-20,000 (ชมพู)
+      if (value <= 80000) return '#f87171';      // >20,000-40,000 (แดงชมพู)
+      if (value <= 200000) return '#ef4444';     // >40,000-100,000 (แดงเข้ม)
+      return '#b91c1c';                          // >100,000 (แดงเข้มสุด)
     } else {
       // สีเขียว-น้ำเงินสำหรับรวม (โทนเย็น)
       const ratio = value / maxValue;
@@ -491,22 +491,25 @@
     // สีพื้นหลังเข้มจะใช้ตัวอักษรสีขาว
     const darkColors = ['#3b82f6', '#1e40af', '#b45309', '#15803d', '#22c55e', '#a855f7', '#9333ea', '#6b21a8', '#c084fc', '#7c3aed',
                         '#ec4899', '#db2777', '#be185d', '#10b981', '#059669',
-                        '#f43f5e', '#e11d48', '#be123c'];
+                        '#f43f5e', '#e11d48', '#be123c', '#f87171', '#ef4444', '#dc2626', '#b91c1c'];
     return darkColors.includes(bgColor) ? '#ffffff' : '#111827';
   }
 
-  function getBorderColor(bgColor, colorScheme) {
+  function getBorderColor(bgColor, colorScheme, value = 0) {
     // สำหรับ Heat Map เงินรางวัล (ชมพู-แดง) ให้เส้นขอบเข้มกว่าพื้นหลัง
     if (colorScheme === 'red') {
       const borderMap = {
         '#f3f4f6': '#d1d5db',  // 0
-        '#ffe4e6': '#fecdd3',  // >0-5K
-        '#fda4af': '#fb7185',  // >5K-10K
-        '#fb7185': '#f43f5e',  // >10K-20K
-        '#f43f5e': '#e11d48',  // >20K-40K
-        '#e11d48': '#be123c',  // >40K-100K
-        '#be123c': '#9f1239'   // >100K
+        '#fecaca': '#fca5a5',  // >5K-10K
+        '#fca5a5': '#f87171',  // >10K-20K
+        '#f87171': '#ef4444',  // >20K-40K
+        '#ef4444': '#dc2626',  // >40K-100K
+        '#b91c1c': '#991b1b'   // >100K
       };
+      // ถ้าสีพื้นหลังเป็น #f3f4f6 แต่มีค่ามากกว่า 0 ให้ใช้เส้นขอบเข้มกว่า
+      if (bgColor === '#f3f4f6' && value > 0) {
+        return '#9ca3af';  // เส้นขอบเทาเข้มกว่าสำหรับ >0-5K
+      }
       return borderMap[bgColor] || '#d1d5db';
     } else if (colorScheme === 'blue') {
       // สำหรับ Heat Map ยอดรวม (เขียว) ให้เส้นขอบเข้มกว่าพื้นหลัง
@@ -564,7 +567,7 @@
       const bottomValue = bottomMap.get(key) || 0;
       const bgColor = getHeatmapColor(value, maxValue, colorScheme);
       const textColor = getTextColor(bgColor);
-      const borderColor = getBorderColor(bgColor, colorScheme, key);
+      const borderColor = getBorderColor(bgColor, colorScheme, value);
 
       const cell = document.createElement('div');
       cell.className = 'heatmap-cell';
@@ -607,14 +610,6 @@
           cell.title = `${key}: รวม ${money(value)} บาท`;
         }
       }
-
-      // คลิกเพื่อดูรายละเอียด
-      cell.addEventListener('click', () => {
-        if (value > 0) {
-          const detail = rows.find(r => r.key === key);
-          alert(`หมายเลข: ${key}\nจำนวนรายการ: ${detail.count}\nบน: ${money(detail.topSum)}\nล่าง: ${money(detail.bottomSum)}\nรวม: ${money(detail.totalSum)}\nเงินรางวัล(บน): ${money(detail.topSum * 70)}\nเงินรางวัล(ล่าง): ${money(detail.bottomSum * 70)}`);
-        }
-      });
 
       // เพิ่ม hover effect เพื่อแสดงคู่ตัวเลข
       cell.addEventListener('mouseenter', () => {
