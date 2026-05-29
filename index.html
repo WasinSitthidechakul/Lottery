@@ -3,102 +3,258 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sum by Duplicate Number</title>
+  <title>ตารางคำนวณหวย</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 16px; font-size: 16px; }
-    .card { max-width: 900px; margin: 0 auto; padding: 16px; border: 1px solid #ddd; border-radius: 12px; }
-    h1 { font-size: 28px; margin: 0 0 12px; }
-    .row { display: grid; grid-template-columns: 200px 200px 200px; gap: 40px; }
-    label { font-size: 16px; color: #444; display: block; margin-bottom: 4px; font-weight: bold; }
-    input, textarea, button { width: 100%; font-size: 18px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
-    .row input { padding: 8px; margin-bottom: 0; }
-    button { cursor: pointer; border: 0; }
-    .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; margin-bottom: 34px; }
-    .quick-add-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: -8px; margin-bottom: 24px; grid-column: 1 / -1; }
-    .quick-add-btns button { padding: 8px; font-size: 14px; font-weight: 600; background: linear-gradient(to bottom, #ffffff, #f3f4f6); border: 2px solid #9ca3af; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.15s ease; }
-    .quick-add-btns button:hover { background: linear-gradient(to bottom, #f9fafb, #e5e7eb); border-color: #6b7280; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transform: translateY(-1px); }
-    .quick-add-btns button:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-    .primary { background: #111827; color: white; }
-    .secondary { background: #e5e7eb; }
-    .danger { background: #fee2e2; }
-    table { width: 100%; border-collapse: collapse; margin-top: 14px; }
-    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; font-size: 16px; }
-    th { font-size: 16px; color: #555; font-weight: 600; }
-    .muted { color: #6b7280; font-size: 15px; margin-top: 8px; }
-    .total { font-weight: 700; }
-    .twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-    .raw-item { padding: 4px 0; }
-    .raw-item-latest { font-size: 17px; font-weight: 600; }
-    .draw-row { margin-bottom: 10px; }
-    .delete-btn { background: #ef4444; color: white; border: 1px solid black; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 12px; width: 100px; display: inline-block; vertical-align: middle; text-align: center; }
-    .delete-btn:hover { background: #dc2626; }
-    .heatmap-container { margin-top: 24px; }
-    .heatmap-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; flex-wrap: nowrap; }
-    .heatmap-title span { white-space: nowrap; }
-    .heatmap-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 600px; max-height: 900px; }
-    .heatmap-grid-large { max-width: 750px; gap: 5px; }
-    .heatmap-grid-large .heatmap-cell-number { font-size: 16px; }
-    .heatmap-grid-large .heatmap-cell-value { font-size: 11px; }
-    .heatmap-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #e5e7eb; position: relative; transition: transform 0.1s; }
-    .heatmap-cell-number { font-size: 14px; font-weight: 600; }
-    .heatmap-cell-value { font-size: 10px; font-weight: 400; margin-top: 2px; }
-    .heatmap-cell-label { font-style: italic; }
-    .heatmap-cell:hover { transform: scale(1.1); z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-    .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; clear: both; position: relative; }
-    .heatmap-legend-item { display: flex; align-items: center; gap: 4px; }
-    .heatmap-legend-box { width: 20px; height: 20px; border-radius: 3px; border: 1px solid #ccc; }
-    .show-all-btn { background: #3b82f6; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 8px; display: inline-block; border: 0; }
-    .show-all-btn:hover { background: #2563eb; }
-    .pair-mode-btn { background: #8b5cf6; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-block; border: 0; margin-left: 18px; width: 120px; text-align: center; }
-    .pair-mode-btn:hover { background: #7c3aed; }
-    .pair-mode-btn.active { background: #6d28d9; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-    .heatmap-cell.highlight-pair { box-shadow: 0 0 0 3px #1e40af, 0 0 12px rgba(30, 64, 175, 0.5); z-index: 20; }
-    .heatmap-cell.highlight-double { box-shadow: 0 0 0 3px #8b5cf6, 0 0 12px rgba(139, 92, 246, 0.5); z-index: 20; }
-    @media (max-width: 720px) {
-      .row, .btns, .twoCol { grid-template-columns: 1fr; }
-      .heatmap-grid { grid-template-columns: repeat(10, 1fr); gap: 2px; max-height: 500px; }
-      .heatmap-cell-number { font-size: 10px; }
-      .heatmap-cell-value { font-size: 7px; margin-top: 1px; }
-      .heatmap-cell.highlight-pair { box-shadow: 0 0 0 2px #1e40af, 0 0 8px rgba(30, 64, 175, 0.5); z-index: 20; }
-      .heatmap-cell.highlight-double { box-shadow: 0 0 0 2px #8b5cf6, 0 0 8px rgba(139, 92, 246, 0.5); z-index: 20; }
+    :root{
+      --bg:#eef2f7;
+      --surface:#ffffff;
+      --surface-soft:#f8fafc;
+      --border:#e5e9f0;
+      --border-strong:#cbd5e1;
+      --text:#0f172a;
+      --muted:#64748b;
+      --primary:#4f46e5;
+      --primary-dark:#4338ca;
+      --primary-soft:#eef2ff;
+      --danger:#ef4444;
+      --danger-soft:#fef2f2;
+      --radius:16px;
+      --radius-sm:10px;
+      --shadow-sm:0 1px 2px rgba(15,23,42,.05),0 1px 3px rgba(15,23,42,.05);
+      --shadow:0 6px 18px rgba(15,23,42,.07),0 2px 6px rgba(15,23,42,.04);
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;}
+    body{
+      background:linear-gradient(180deg,#eef2f7 0%,#e9eef5 100%);
+      background-attachment:fixed;
+      color:var(--text);
+      font-family:"Noto Sans Thai","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+      font-size:16px;line-height:1.55;
+      padding:22px 14px 64px;
+      -webkit-font-smoothing:antialiased;
+    }
+    .app{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:16px;}
+
+    /* header */
+    .app-header{text-align:center;margin-bottom:2px;}
+    .app-header h1{font-size:27px;font-weight:800;margin:0;letter-spacing:-.01em;
+      background:linear-gradient(90deg,#4f46e5,#7c3aed);-webkit-background-clip:text;background-clip:text;color:transparent;}
+    .app-header .subtitle{margin:5px 0 0;color:var(--muted);font-size:14px;}
+
+    /* panel */
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+      padding:18px;box-shadow:var(--shadow-sm);}
+    .panel-label{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:12px;}
+    .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+    .panel-head .panel-label{margin-bottom:0;}
+    .panel-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+    /* fields */
+    .field label,.field-label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px;}
+    input,select{width:100%;font-size:16px;padding:11px 12px;border-radius:var(--radius-sm);
+      border:1px solid var(--border-strong);background:var(--surface);color:var(--text);outline:none;
+      transition:border-color .15s,box-shadow .15s;}
+    input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+    input::placeholder{color:#94a3b8;}
+
+    .draw-grid{display:grid;grid-template-columns:1.3fr 1fr 1.3fr;gap:14px;align-items:end;}
+    .draw-badge{margin-top:14px;display:inline-flex;align-items:center;gap:8px;
+      background:var(--primary-soft);color:var(--primary-dark);font-weight:700;font-size:15px;
+      padding:8px 14px;border-radius:999px;}
+    .draw-badge::before{content:"📅";}
+
+    /* segmented control */
+    .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface-soft);
+      border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:4px;}
+    .seg button{border:0;background:transparent;color:var(--muted);font-weight:700;font-size:15px;
+      padding:9px;border-radius:7px;cursor:pointer;transition:all .15s;}
+    .seg button.active{background:var(--primary);color:#fff;box-shadow:var(--shadow-sm);}
+
+    /* add panel */
+    .add-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:12px;}
+    .quick-add{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-bottom:16px;}
+    .quick-add button{padding:9px 0;font-size:14px;font-weight:700;color:var(--primary-dark);
+      background:var(--primary-soft);border:1px solid #dfe3ff;border-radius:9px;cursor:pointer;transition:all .12s;}
+    .quick-add button:hover{background:#e0e7ff;transform:translateY(-1px);}
+    .quick-add button:active{transform:translateY(0);}
+
+    /* buttons */
+    .btn{font-size:15px;font-weight:700;padding:12px 16px;border:0;border-radius:var(--radius-sm);
+      cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:7px;}
+    .btn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(79,70,229,.28);}
+    .btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 6px 16px rgba(79,70,229,.34);}
+    .btn-primary:active{transform:translateY(0);}
+    .btn-block{width:100%;}
+    .btn-soft{background:var(--surface-soft);color:var(--text);border:1px solid var(--border-strong);}
+    .btn-soft:hover{background:#eef2f7;}
+    .btn-danger{background:var(--danger-soft);color:#b91c1c;border:1px solid #fecaca;}
+    .btn-danger:hover{background:#fee2e2;}
+
+    /* card tabs (chips) */
+    .card-tabs-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+    .card-tabs-head .field-label{margin-bottom:0;}
+    .btn-newcard{flex:none;display:inline-flex;align-items:center;gap:6px;background:var(--primary-soft);
+      color:var(--primary-dark);border:1.5px dashed var(--primary);border-radius:999px;
+      font-weight:700;font-size:14px;padding:7px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+    .btn-newcard:hover{background:#e0e7ff;transform:translateY(-1px);}
+    .btn-newcard:active{transform:translateY(0);}
+    .card-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+    .chip{display:inline-flex;align-items:center;gap:7px;background:var(--surface-soft);
+      border:1.5px solid var(--border-strong);color:var(--text);font-weight:600;font-size:14px;
+      padding:7px 12px;border-radius:999px;cursor:pointer;transition:all .15s;}
+    .chip:hover{border-color:var(--primary);}
+    .chip.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+    .chip-count{background:rgba(15,23,42,.08);border-radius:999px;font-size:12px;font-weight:700;
+      min-width:22px;height:20px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px;}
+    .chip.active .chip-count{background:rgba(255,255,255,.25);color:#fff;}
+    .chip-new{background:transparent;border-style:dashed;color:var(--primary);}
+    .chip-new:hover{background:var(--primary-soft);}
+    .chip-toggle{background:var(--surface-soft);border-style:dashed;color:var(--muted);font-weight:700;}
+    .chip-toggle:hover{border-color:var(--primary);color:var(--primary-dark);}
+
+    /* card boxes */
+    .cards-section{display:flex;flex-direction:column;gap:14px;}
+    .cards-toggle{text-align:center;margin-top:2px;}
+    .cardbox{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);
+      box-shadow:var(--shadow-sm);overflow:hidden;transition:border-color .15s,box-shadow .15s;}
+    .cardbox.active{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft),var(--shadow);}
+    .cardbox-head{display:flex;justify-content:space-between;align-items:center;gap:10px;
+      padding:14px 16px;cursor:pointer;background:linear-gradient(180deg,#fbfcfe,#f6f8fc);
+      border-bottom:1px solid var(--border);}
+    .cardbox-title{display:flex;align-items:center;gap:9px;min-width:0;}
+    .cardbox-title .dot{width:10px;height:10px;border-radius:50%;background:var(--border-strong);flex:none;}
+    .cardbox.active .cardbox-title .dot{background:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+    .cardbox-name{font-weight:800;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .cardbox-badge{font-size:12px;font-weight:700;color:var(--muted);background:var(--surface-soft);
+      border:1px solid var(--border);border-radius:999px;padding:2px 9px;flex:none;}
+    .cardbox-tools{display:flex;gap:6px;flex:none;}
+    .icon-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border-strong);
+      background:var(--surface);cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;transition:all .12s;}
+    .icon-btn:hover{background:var(--surface-soft);}
+    .icon-btn.danger:hover{background:var(--danger-soft);border-color:#fecaca;}
+    .cardbox-sub{padding:10px 16px;font-size:14px;color:var(--muted);border-bottom:1px dashed var(--border);}
+    .cardbox-sub b{color:var(--text);}
+    .cardbox-items{padding:6px 10px 8px;}
+    .ci-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid #f1f5f9;}
+    .ci-row:last-child{border-bottom:0;}
+    .ci-key{font-weight:800;font-size:18px;font-variant-numeric:tabular-nums;background:var(--surface-soft);
+      border:1px solid var(--border);border-radius:8px;min-width:46px;text-align:center;padding:4px 8px;flex:none;}
+    .ci-amt{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
+    .tag{font-size:13px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+    .tag-top{background:#fef3c7;color:#92400e;}
+    .tag-bottom{background:#dcfce7;color:#166534;}
+    .ci-del{width:30px;height:30px;border-radius:8px;border:1px solid #fecaca;background:var(--danger-soft);
+      color:#dc2626;cursor:pointer;font-size:14px;flex:none;transition:all .12s;}
+    .ci-del:hover{background:#fee2e2;}
+    .ci-empty{padding:18px;text-align:center;color:var(--muted);font-size:14px;}
+
+    /* table */
+    table{width:100%;border-collapse:collapse;margin-top:4px;}
+    th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--border);font-size:15px;}
+    th{font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.02em;}
+    tfoot td{border-bottom:0;border-top:2px solid var(--border-strong);}
+    .total{font-weight:800;}
+    td.empty{text-align:center;color:var(--muted);padding:24px;}
+    tbody tr:hover{background:var(--surface-soft);}
+    .muted{color:var(--muted);font-size:14px;margin-top:10px;}
+
+    /* heatmaps */
+    .heatmap-container{margin-top:0;}
+    .heatmap-title{font-size:17px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;flex-wrap:nowrap;}
+    .heatmap-title span{white-space:nowrap;}
+    .heatmap-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;max-width:600px;max-height:900px;}
+    .heatmap-grid-large{max-width:750px;gap:5px;}
+    .heatmap-grid-large .heatmap-cell-number{font-size:16px;}
+    .heatmap-grid-large .heatmap-cell-value{font-size:11px;}
+    .heatmap-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e5e7eb;position:relative;transition:transform .1s;}
+    .heatmap-cell-number{font-size:14px;font-weight:600;}
+    .heatmap-cell-value{font-size:10px;font-weight:400;margin-top:2px;}
+    .heatmap-cell-label{font-style:italic;}
+    .heatmap-cell:hover{transform:scale(1.1);z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+    .heatmap-legend{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;clear:both;position:relative;flex-wrap:wrap;}
+    .heatmap-legend-item{display:flex;align-items:center;gap:4px;}
+    .heatmap-legend-box{width:20px;height:20px;border-radius:3px;border:1px solid #ccc;}
+    .show-all-btn{background:var(--primary);color:white;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;margin-top:8px;display:inline-block;border:0;font-weight:600;}
+    .show-all-btn:hover{background:var(--primary-dark);}
+    .pair-mode-btn{background:#8b5cf6;color:white;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;display:inline-block;border:0;margin-left:18px;width:120px;text-align:center;font-weight:600;}
+    .pair-mode-btn:hover{background:#7c3aed;}
+    .pair-mode-btn.active{background:#6d28d9;box-shadow:inset 0 2px 4px rgba(0,0,0,0.2);}
+    .heatmap-cell.highlight-pair{box-shadow:0 0 0 3px #1e40af,0 0 12px rgba(30,64,175,0.5);z-index:20;}
+    .heatmap-cell.highlight-double{box-shadow:0 0 0 3px #8b5cf6,0 0 12px rgba(139,92,246,0.5);z-index:20;}
+
+    @media (max-width:720px){
+      body{padding:14px 10px 48px;}
+      .panel{padding:14px;}
+      .app-header h1{font-size:22px;}
+      .draw-grid,.add-grid{grid-template-columns:1fr;}
+      .quick-add{grid-template-columns:repeat(4,1fr);}
+      .heatmap-grid{grid-template-columns:repeat(10,1fr);gap:2px;max-height:500px;}
+      .heatmap-cell-number{font-size:10px;}
+      .heatmap-cell-value{font-size:7px;margin-top:1px;}
+      .heatmap-title{font-size:15px;}
+      .pair-mode-btn{margin-left:10px;width:auto;padding:8px 10px;font-size:13px;}
+      .heatmap-cell.highlight-pair{box-shadow:0 0 0 2px #1e40af,0 0 8px rgba(30,64,175,0.5);z-index:20;}
+      .heatmap-cell.highlight-double{box-shadow:0 0 0 2px #8b5cf6,0 0 8px rgba(139,92,246,0.5);z-index:20;}
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>ตารางคำนวณ หวย!!!</h1>
+  <div class="app">
+    <header class="app-header">
+      <h1>💰 ตารางคำนวณหวย</h1>
+      <p class="subtitle">รวมยอดอัตโนมัติ · จัดกลุ่มเป็นการ์ด · ดู Heat Map</p>
+    </header>
 
-    <div class="row draw-row">
-      <div>
-        <label>งวดที่</label>
-        <input id="drawNumberInput" inputmode="numeric" placeholder="1 หรือ 2" maxlength="1" />
+    <!-- งวด (Global) -->
+    <section class="panel">
+      <div class="panel-label">งวดที่คำนวณ</div>
+      <div class="draw-grid">
+        <div class="field">
+          <label for="monthSelect">เดือน</label>
+          <select id="monthSelect"><option value="">เลือกเดือน</option></select>
+        </div>
+        <div class="field">
+          <label for="yearInput">ปี (พ.ศ.)</label>
+          <input id="yearInput" inputmode="numeric" placeholder="เช่น 2568" maxlength="4" />
+        </div>
+        <div class="field">
+          <label>งวดที่</label>
+          <div class="seg" id="drawSeg">
+            <button type="button" data-draw="1">งวด 1</button>
+            <button type="button" data-draw="2">งวด 2</button>
+          </div>
+        </div>
       </div>
-      <div>
-        <label>เดือน</label>
-        <select id="monthSelect">
-          <option value="">เลือกเดือน</option>
-        </select>
-      </div>
-      <div>
-        <label>ปี (พ.ศ.)</label>
-        <input id="yearInput" inputmode="numeric" placeholder="เช่น 2568" maxlength="4" />
-      </div>
-    </div>
+      <div class="draw-badge" id="drawBadge"></div>
+    </section>
 
-    <div class="row">
-      <div>
-        <label>เลขที่ซื้อ</label>
-        <input id="keyInput" inputmode="numeric" placeholder="เช่น 12" maxlength="2" />
+    <!-- เพิ่มรายการ -->
+    <section class="panel">
+      <div class="panel-label">เพิ่มรายการ</div>
+      <div class="card-tabs-head">
+        <span class="field-label">เลือกการ์ดที่จะเพิ่มเข้า</span>
+        <button type="button" class="btn-newcard" onclick="createCard()">＋ การ์ดใหม่</button>
       </div>
-      <div>
-        <label>บน</label>
-        <input id="topInput" inputmode="decimal" placeholder="เช่น 100" />
+      <div class="card-tabs" id="cardTabs"></div>
+
+      <div class="add-grid">
+        <div class="field">
+          <label for="keyInput">เลขที่ซื้อ</label>
+          <input id="keyInput" inputmode="numeric" placeholder="เช่น 12" maxlength="2" />
+        </div>
+        <div class="field">
+          <label for="topInput">บน</label>
+          <input id="topInput" inputmode="decimal" placeholder="เช่น 100" />
+        </div>
+        <div class="field">
+          <label for="bottomInput">ล่าง</label>
+          <input id="bottomInput" inputmode="decimal" placeholder="เช่น 100" />
+        </div>
       </div>
-      <div>
-        <label>ล่าง</label>
-        <input id="bottomInput" inputmode="decimal" placeholder="เช่น 100" />
-      </div>
-      <div class="quick-add-btns">
+
+      <div class="quick-add">
         <button type="button" onclick="addToBothInputs(5)">+5</button>
         <button type="button" onclick="addToBothInputs(10)">+10</button>
         <button type="button" onclick="addToBothInputs(20)">+20</button>
@@ -108,191 +264,151 @@
         <button type="button" onclick="addToBothInputs(150)">+150</button>
         <button type="button" onclick="addToBothInputs(200)">+200</button>
       </div>
-    </div>
 
-    <div class="btns">
-      <button class="primary" id="addBtn">เพิ่มรายการ</button>
-      <button class="secondary" id="exportBtn">คัดลอกสรุป</button>
-      <button class="danger" id="clearBtn">ล้างทั้งหมด</button>
-    </div>
+      <button class="btn btn-primary btn-block" id="addBtn">➕ เพิ่มเข้า “<span id="activeCardName"></span>”</button>
+    </section>
 
-    <div>
-      <label>รายการดิบ</label>
-      <div id="rawList" class="muted">ยังไม่มีรายการ</div>
-    </div>
+    <!-- การ์ดทั้งหมด -->
+    <section class="cards-section" id="cardsSection"></section>
 
-    <div class="heatmap-container">
-      <div class="heatmap-title"><span>Heat Map: ยอดรวมเงินรางวัลทั้งหมด (บน + ล่าง)</span><button class="pair-mode-btn" id="pairModeBtnPrize" onclick="togglePairMode('prize')">เรียงแบบคู่</button></div>
-      <div id="heatmapGridPrize" class="heatmap-grid heatmap-grid-large"></div>
-      <div class="heatmap-legend">
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #f3f4f6; border: 3px solid #d1d5db;"></div>
-          <span>0</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #f3f4f6; border: 3px solid #9ca3af;"></div>
-          <span>>0-5K</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #fecaca; border: 3px solid #fca5a5;"></div>
-          <span>>5K-10K</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #fca5a5; border: 3px solid #f87171;"></div>
-          <span>>10K-20K</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #f87171; border: 3px solid #ef4444; color: #ffffff;"></div>
-          <span>>20K-40K</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #ef4444; border: 3px solid #dc2626; color: #ffffff;"></div>
-          <span>>40K-100K</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #b91c1c; border: 3px solid #991b1b; color: #ffffff;"></div>
-          <span>>100K</span>
+    <!-- สรุปตามเลข -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-label">สรุปยอดตามเลข · รวมทุกการ์ด</div>
+        <div class="panel-actions">
+          <button class="btn btn-soft" id="exportBtn">📋 คัดลอกสรุป</button>
+          <button class="btn btn-danger" id="clearBtn">🗑 ล้างทั้งหมด</button>
         </div>
       </div>
-    </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ตัวเลข</th>
+            <th>จำนวนรายการ</th>
+            <th>ยอดรวม (บน)</th>
+            <th>ยอดรวม (ล่าง)</th>
+            <th>ยอดรวมทั้งหมด</th>
+          </tr>
+        </thead>
+        <tbody id="summaryBody"></tbody>
+        <tfoot>
+          <tr>
+            <td class="total">รวมทั้งหมด</td>
+            <td class="total" id="totalCount">0</td>
+            <td class="total" id="grandPrizeTop">0</td>
+            <td class="total" id="grandPrizeBottom">0</td>
+            <td class="total" id="grandTotal">0</td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="muted">Tip: ใส่เลขซ้ำได้ ระบบจะรวมยอดให้อัตโนมัติ • คลิกที่หัวการ์ดเพื่อเลือกการ์ดที่จะเพิ่มเข้า</div>
+    </section>
 
-    <table>
-      <thead>
-        <tr>
-          <th>ตัวเลข</th>
-          <th>จำนวนรายการ</th>
-          <th>ยอดรวม (บน)</th>
-          <th>ยอดรวม (ล่าง)</th>
-          <th>ยอดรวมทั้งหมด</th>
-        </tr>
-      </thead>
-      <tbody id="summaryBody"></tbody>
-      <tfoot>
-        <tr>
-          <td class="total">รวมทั้งหมด</td>
-          <td class="total" id="totalCount">0</td>
-          <td class="total" id="grandPrizeTop">0</td>
-          <td class="total" id="grandPrizeBottom">0</td>
-          <td class="total" id="grandTotal">0</td>
-        </tr>
-      </tfoot>
-    </table>
-
-    <div class="muted">Tip: ใส่เลขซ้ำได้ ระบบจะรวมยอดให้อัตโนมัติ</div>
-
-    <div class="heatmap-container">
-      <div class="heatmap-title"><span>Heat Map: ยอดรวมทั้งหมด (บน + ล่าง)</span><button class="pair-mode-btn" id="pairModeBtn" onclick="togglePairMode('total')">เรียงแบบคู่</button></div>
-      <div id="heatmapGrid" class="heatmap-grid heatmap-grid-large"></div>
-      <div class="heatmap-legend">
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #f3f4f6;"></div>
-          <span>0</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #d1fae5;"></div>
-          <span>น้อย</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #6ee7b7;"></div>
-          <span>ปานกลาง</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #34d399;"></div>
-          <span>ปานกลาง-มาก</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #10b981;"></div>
-          <span>มาก</span>
-        </div>
-        <div class="heatmap-legend-item">
-          <div class="heatmap-legend-box" style="background: #059669;"></div>
-          <span>มากที่สุด</span>
+    <!-- Heat Map เงินรางวัล -->
+    <section class="panel">
+      <div class="heatmap-container">
+        <div class="heatmap-title"><span>Heat Map: ยอดรวมเงินรางวัลทั้งหมด (บน + ล่าง)</span><button class="pair-mode-btn" id="pairModeBtnPrize" onclick="togglePairMode('prize')">เรียงแบบคู่</button></div>
+        <div id="heatmapGridPrize" class="heatmap-grid heatmap-grid-large"></div>
+        <div class="heatmap-legend">
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#f3f4f6;border:3px solid #d1d5db;"></div><span>0</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#f3f4f6;border:3px solid #9ca3af;"></div><span>&gt;0-5K</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#fecaca;border:3px solid #fca5a5;"></div><span>&gt;5K-10K</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#fca5a5;border:3px solid #f87171;"></div><span>&gt;10K-20K</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#f87171;border:3px solid #ef4444;color:#ffffff;"></div><span>&gt;20K-40K</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#ef4444;border:3px solid #dc2626;color:#ffffff;"></div><span>&gt;40K-100K</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#b91c1c;border:3px solid #991b1b;color:#ffffff;"></div><span>&gt;100K</span></div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Heat Map ยอดรวม -->
+    <section class="panel">
+      <div class="heatmap-container">
+        <div class="heatmap-title"><span>Heat Map: ยอดรวมทั้งหมด (บน + ล่าง)</span><button class="pair-mode-btn" id="pairModeBtn" onclick="togglePairMode('total')">เรียงแบบคู่</button></div>
+        <div id="heatmapGrid" class="heatmap-grid heatmap-grid-large"></div>
+        <div class="heatmap-legend">
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#f3f4f6;"></div><span>0</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#d1fae5;"></div><span>น้อย</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#6ee7b7;"></div><span>ปานกลาง</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#34d399;"></div><span>ปานกลาง-มาก</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#10b981;"></div><span>มาก</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#059669;"></div><span>มากที่สุด</span></div>
+        </div>
+      </div>
+    </section>
 
   </div>
 
 <script>
-  // เก็บรายการดิบ: [{draw: "มกราคม งวด 1", key: "123", top: 100, bottom: 50}, ...]
-  const STORAGE_KEY = 'lottery_items';
-  const items = loadFromStorage();
-  let showAllItems = false;
+  // ===== Storage keys =====
+  const STORAGE_CARDS  = 'lottery_cards';      // [{id, name, items:[{key, top, bottom}]}]
+  const STORAGE_DRAW   = 'lottery_draw';       // {drawNumber, month, year}
+  const STORAGE_ACTIVE = 'lottery_active_card';// active card id
+  const STORAGE_KEY    = 'lottery_items';      // legacy (migration only)
+  const LAST_DRAW_KEY  = 'last_draw_selection';// legacy draw source
+
+  // ===== State =====
+  let cards = [];
+  let activeCardId = null;
+  let draw = { drawNumber: '', month: '', year: '' };
   let showAllTableRows = false;
+  let showAllCards = false;
+  let showAllChips = false;
   let pairModeActive = { prize: false, total: false };
 
-  const drawNumberInput = document.getElementById('drawNumberInput');
-  const monthSelect = document.getElementById('monthSelect');
-  const yearInput = document.getElementById('yearInput');
-  const keyInput = document.getElementById('keyInput');
-  const topInput = document.getElementById('topInput');
-  const bottomInput = document.getElementById('bottomInput');
-  const addBtn = document.getElementById('addBtn');
-  const clearBtn = document.getElementById('clearBtn');
-  const summaryBody = document.getElementById('summaryBody');
-  const totalCountEl = document.getElementById('totalCount');
-  const grandPrizeTopEl = document.getElementById('grandPrizeTop');
+  // ===== DOM refs =====
+  const monthSelect    = document.getElementById('monthSelect');
+  const yearInput      = document.getElementById('yearInput');
+  const drawSeg        = document.getElementById('drawSeg');
+  const drawBadge      = document.getElementById('drawBadge');
+  const keyInput       = document.getElementById('keyInput');
+  const topInput       = document.getElementById('topInput');
+  const bottomInput    = document.getElementById('bottomInput');
+  const addBtn         = document.getElementById('addBtn');
+  const clearBtn       = document.getElementById('clearBtn');
+  const exportBtn      = document.getElementById('exportBtn');
+  const cardTabs       = document.getElementById('cardTabs');
+  const cardsSection   = document.getElementById('cardsSection');
+  const activeCardName = document.getElementById('activeCardName');
+  const summaryBody    = document.getElementById('summaryBody');
+  const totalCountEl   = document.getElementById('totalCount');
+  const grandPrizeTopEl    = document.getElementById('grandPrizeTop');
   const grandPrizeBottomEl = document.getElementById('grandPrizeBottom');
-  const grandTotalEl = document.getElementById('grandTotal');
-  const rawList = document.getElementById('rawList');
-  const exportBtn = document.getElementById('exportBtn');
+  const grandTotalEl   = document.getElementById('grandTotal');
 
-  const LAST_DRAW_KEY = 'last_draw_selection';
-
-  // สร้างตัวเลือกเดือน
+  // ===== Month options =====
   function initMonthOptions() {
     const months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
                     'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
-
     monthSelect.innerHTML = '<option value="">เลือกเดือน</option>';
     months.forEach(month => {
       monthSelect.innerHTML += `<option value="${month}">${month}</option>`;
     });
-
-    // ตั้งค่าปีเริ่มต้น
-    const currentYear = new Date().getFullYear() + 543; // ปี พ.ศ.
-    yearInput.value = currentYear;
   }
 
-  // โหลดงวดล่าสุดที่เลือก
-  function loadLastDraw() {
-    try {
-      const saved = localStorage.getItem(LAST_DRAW_KEY);
-      if (saved) {
-        const { drawNumber, month, year } = JSON.parse(saved);
-        drawNumberInput.value = drawNumber;
-        monthSelect.value = month;
-        if (year) yearInput.value = year;
-      }
-    } catch {
-      // ignore
-    }
+  // ===== Helpers =====
+  function genId() {
+    return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
 
-  // เซฟงวดที่เลือก
-  function saveLastDraw(drawNumber, month, year) {
-    try {
-      localStorage.setItem(LAST_DRAW_KEY, JSON.stringify({ drawNumber, month, year }));
-    } catch {
-      // ignore
-    }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   }
 
-  function loadFromStorage() {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
+  function getActiveCard() {
+    return cards.find(c => c.id === activeCardId) || cards[0];
   }
 
-  function saveToStorage() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch (e) {
-      console.error('Failed to save data:', e);
-    }
+  function getAllItems() {
+    return cards.flatMap(c => c.items);
+  }
+
+  // ชื่อ default ถัดไป: #1, #2, #3, ... (ข้ามเลขที่ถูกใช้ไปแล้ว)
+  function nextCardName() {
+    const names = new Set(cards.map(c => c.name));
+    let n = cards.length + 1;
+    while (names.has('#' + n)) n++;
+    return '#' + n;
   }
 
   function parseAmount(v) {
@@ -302,38 +418,116 @@
     return Number.isFinite(n) ? n : null;
   }
 
-  function addItem(drawNumber, month, year, key, top, bottom) {
-    const dn = String(drawNumber).trim();
-    if (!dn) return alert('กรุณาใส่งวดที่ (1 หรือ 2)');
-    if (dn !== '1' && dn !== '2') return alert('งวดที่ต้องเป็น 1 หรือ 2 เท่านั้น');
-    const m = String(month).trim();
-    if (!m) return alert('กรุณาเลือกเดือน');
-    const y = String(year).trim();
-    if (!y) return alert('กรุณาใส่ปี');
-    if (!/^\d{4}$/.test(y)) return alert('กรุณาใส่ปี พ.ศ. 4 หลัก (เช่น 2568)');
-    const draw = `${m} ${y} งวด ${dn}`;
-
-    const k = String(key).trim();
-    if (!k) return alert('กรุณาใส่ตัวเลข (Key)');
-    if (!/^\d{2}$/.test(k)) return alert('กรุณาใส่เลข 2 หลักเท่านั้น (00-99)');
-    const t = parseAmount(top) || 0;
-    const b = parseAmount(bottom) || 0;
-    if (t === 0 && b === 0) return alert('กรุณาใส่จำนวนเงิน บน หรือ ล่าง');
-
-    items.push({ draw: draw, key: k, top: t, bottom: b });
-    saveLastDraw(dn, m, y);
-    saveToStorage();
-    render();
+  function money(n) {
+    return n.toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
 
+  // ===== Load / Migration =====
+  function loadData() {
+    // draw
+    try {
+      const d = localStorage.getItem(STORAGE_DRAW);
+      if (d) {
+        const parsed = JSON.parse(d);
+        draw = { drawNumber: parsed.drawNumber || '', month: parsed.month || '', year: parsed.year || '' };
+      }
+    } catch { /* ignore */ }
+
+    // cards
+    let loadedCards = null;
+    try {
+      const c = localStorage.getItem(STORAGE_CARDS);
+      if (c) loadedCards = JSON.parse(c);
+    } catch { /* ignore */ }
+
+    if (Array.isArray(loadedCards)) {
+      cards = loadedCards.map(c => ({
+        id: c.id || genId(),
+        name: c.name || 'การ์ด',
+        items: Array.isArray(c.items) ? c.items.map(it => ({ key: it.key, top: it.top || 0, bottom: it.bottom || 0 })) : []
+      }));
+    } else {
+      // migrate from legacy flat items list
+      let oldItems = [];
+      try {
+        const o = localStorage.getItem(STORAGE_KEY);
+        if (o) oldItems = JSON.parse(o);
+      } catch { /* ignore */ }
+
+      if (Array.isArray(oldItems) && oldItems.length > 0) {
+        cards = [{
+          id: genId(),
+          name: '#1',
+          items: oldItems.map(it => ({ key: it.key, top: it.top || 0, bottom: it.bottom || 0 }))
+        }];
+        // best-guess draw from last selection (legacy)
+        if (!draw.month && !draw.year && !draw.drawNumber) {
+          try {
+            const ld = localStorage.getItem(LAST_DRAW_KEY);
+            if (ld) {
+              const { drawNumber, month, year } = JSON.parse(ld);
+              draw = { drawNumber: drawNumber || '', month: month || '', year: year || '' };
+            }
+          } catch { /* ignore */ }
+        }
+        saveCards();
+        saveDraw();
+        // note: legacy 'lottery_items' is intentionally kept as a backup
+      } else {
+        cards = [];
+      }
+    }
+
+    // ensure at least one card exists
+    if (cards.length === 0) {
+      cards = [{ id: genId(), name: '#1', items: [] }];
+      saveCards();
+    }
+
+    // active card
+    try {
+      const a = localStorage.getItem(STORAGE_ACTIVE);
+      if (a && cards.some(c => c.id === a)) activeCardId = a;
+    } catch { /* ignore */ }
+    if (!activeCardId) activeCardId = cards[0].id;
+  }
+
+  // ===== Save =====
+  function saveCards() {
+    try { localStorage.setItem(STORAGE_CARDS, JSON.stringify(cards)); }
+    catch (e) { console.error('Failed to save cards:', e); }
+  }
+  function saveDraw() {
+    try { localStorage.setItem(STORAGE_DRAW, JSON.stringify(draw)); } catch { /* ignore */ }
+  }
+  function saveActive() {
+    try { localStorage.setItem(STORAGE_ACTIVE, activeCardId); } catch { /* ignore */ }
+  }
+
+  // ===== Add item (into active card; draw is NOT attached) =====
+  function addItem(key, top, bottom) {
+    const k = String(key).trim();
+    if (!k) { alert('กรุณาใส่ตัวเลข'); return false; }
+    if (!/^\d{2}$/.test(k)) { alert('กรุณาใส่เลข 2 หลักเท่านั้น (00-99)'); return false; }
+    const t = parseAmount(top) || 0;
+    const b = parseAmount(bottom) || 0;
+    if (t === 0 && b === 0) { alert('กรุณาใส่จำนวนเงิน บน หรือ ล่าง'); return false; }
+
+    const card = getActiveCard();
+    card.items.push({ key: k, top: t, bottom: b });
+    saveCards();
+    render();
+    return true;
+  }
+
+  // ===== Summarize (combines ALL cards via getAllItems) =====
   function summarize() {
-    // map: key -> {count, topSum, bottomSum, totalSum}
     const map = new Map();
     let grandTotal = 0;
     let grandTopSum = 0;
     let grandBottomSum = 0;
 
-    for (const it of items) {
+    for (const it of getAllItems()) {
       const itemTotal = it.top + it.bottom;
       grandTotal += itemTotal;
       grandTopSum += it.top;
@@ -346,7 +540,6 @@
       cur.totalSum += itemTotal;
     }
 
-    // แปลงเป็น array เรียงตาม key
     const rows = Array.from(map.entries())
       .map(([key, v]) => ({ key, count: v.count, topSum: v.topSum, bottomSum: v.bottomSum, totalSum: v.totalSum }))
       .sort((a, b) => a.key.localeCompare(b.key));
@@ -354,43 +547,95 @@
     return { rows, grand: grandTotal, grandTop: grandTopSum, grandBottom: grandBottomSum };
   }
 
-  function money(n) {
-    // แสดงรูปแบบเงิน
-    return n.toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-  }
+  // ===== Card actions =====
+  window.selectCard = function(id) {
+    if (!cards.some(c => c.id === id)) return;
+    activeCardId = id;
+    saveActive();
+    render();
+  };
 
-  window.deleteItem = function(index) {
-    const item = items[index];
+  window.createCard = function() {
+    const defaultName = nextCardName();
+    const input = prompt('ตั้งชื่อการ์ดใหม่', defaultName);
+    if (input === null) return; // cancelled
+    const name = input.trim() || defaultName;
+    const card = { id: genId(), name, items: [] };
+    cards.push(card);
+    activeCardId = card.id;
+    saveCards();
+    saveActive();
+    render();
+    keyInput.focus();
+  };
+
+  window.renameCard = function(id) {
+    const c = cards.find(x => x.id === id);
+    if (!c) return;
+    const input = prompt('เปลี่ยนชื่อการ์ด', c.name);
+    if (input === null) return;
+    c.name = input.trim() || c.name;
+    saveCards();
+    render();
+  };
+
+  window.deleteCard = function(id) {
+    const c = cards.find(x => x.id === id);
+    if (!c) return;
+    const msg = c.items.length > 0
+      ? `ต้องการลบการ์ด "${c.name}" พร้อมรายการทั้งหมด ${c.items.length} รายการ?`
+      : `ต้องการลบการ์ด "${c.name}"?`;
+    if (!confirm(msg)) return;
+    cards = cards.filter(x => x.id !== id);
+    if (cards.length === 0) {
+      cards = [{ id: genId(), name: '#1', items: [] }];
+    }
+    if (activeCardId === id) {
+      activeCardId = cards[0].id;
+      saveActive();
+    }
+    saveCards();
+    render();
+  };
+
+  window.deleteItem = function(cardId, idx) {
+    const c = cards.find(x => x.id === cardId);
+    if (!c) return;
+    const it = c.items[idx];
+    if (!it) return;
     const confirmMsg = `ต้องการลบรายการนี้?\n\n` +
-      `งวด: ${item.draw}\n` +
-      `หมายเลข: ${item.key}\n` +
-      `บน: ${money(item.top)} บาท\n` +
-      `ล่าง: ${money(item.bottom)} บาท\n` +
-      `รวม: ${money(item.top + item.bottom)} บาท`;
-
+      `การ์ด: ${c.name}\n` +
+      `หมายเลข: ${it.key}\n` +
+      `บน: ${money(it.top)} บาท\n` +
+      `ล่าง: ${money(it.bottom)} บาท\n` +
+      `รวม: ${money(it.top + it.bottom)} บาท`;
     if (confirm(confirmMsg)) {
-      items.splice(index, 1);
-      saveToStorage();
+      c.items.splice(idx, 1);
+      saveCards();
       render();
     }
-  }
-
-  window.toggleShowAll = function() {
-    showAllItems = !showAllItems;
-    render();
-  }
+  };
 
   window.toggleShowAllTable = function() {
     showAllTableRows = !showAllTableRows;
     render();
-  }
+  };
 
-  // ฟังก์ชันสำหรับหาตัวเลขคู่
+  window.toggleShowAllCards = function() {
+    showAllCards = !showAllCards;
+    render();
+  };
+
+  window.toggleShowAllChips = function() {
+    showAllChips = !showAllChips;
+    render();
+  };
+
+  // ===== Pair / double helpers (verbatim) =====
   function getPairNumber(key) {
     return key.split('').reverse().join('');
   }
 
-  // ตรวจสอบว่าเป็นเลขซ้ำหรือไม่ (11, 22, 33, ...)
   function isDoubleNumber(key) {
     return key[0] === key[1];
   }
@@ -409,21 +654,16 @@
       btn.textContent = 'เรียงแบบคู่';
     }
 
-    // Re-render heat map with new order
     render();
-  }
+  };
 
-  // ฟังก์ชันสำหรับสร้างลำดับการแสดงผล
   function getDisplayOrder(pairMode) {
     if (!pairMode) {
-      // ลำดับปกติ: 00, 01, 02, ..., 98, 99
       return Array.from({ length: 100 }, (_, i) => String(i).padStart(2, '0'));
     } else {
-      // ลำดับแบบคู่: 00, 01, 10, 02, 20, 03, 30, ..., 11, 22, 33, ..., 99
       const order = [];
       const added = new Set();
 
-      // เพิ่มคู่ตัวเลขก่อน (ยกเว้นเลขซ้ำ)
       for (let i = 0; i < 100; i++) {
         const key = String(i).padStart(2, '0');
         if (!added.has(key) && !isDoubleNumber(key)) {
@@ -438,7 +678,6 @@
         }
       }
 
-      // เพิ่มเลขซ้ำท้ายสุด
       for (let i = 0; i < 10; i++) {
         const key = String(i) + String(i);
         if (!added.has(key)) {
@@ -455,7 +694,6 @@
     if (value === 0) return '#f3f4f6';
 
     if (colorScheme === 'yellow') {
-      // สีเหลือง-ส้มสำหรับ "บน"
       const ratio = value / maxValue;
       if (ratio < 0.2) return '#fef3c7';
       if (ratio < 0.4) return '#fde68a';
@@ -463,7 +701,6 @@
       if (ratio < 0.8) return '#f59e0b';
       return '#b45309';
     } else if (colorScheme === 'green') {
-      // สีเขียวสำหรับ "ล่าง"
       const ratio = value / maxValue;
       if (ratio < 0.2) return '#dcfce7';
       if (ratio < 0.4) return '#86efac';
@@ -471,26 +708,23 @@
       if (ratio < 0.8) return '#22c55e';
       return '#15803d';
     } else if (colorScheme === 'red') {
-      // สีชมพู-แดงสำหรับเงินรางวัล - 7 ระดับตามยอดรวม (ความแตกต่างชัดเจน)
-      if (value <= 10000) return '#f3f4f6';      // >0-5,000 (สีเทาอ่อน)
-      if (value <= 20000) return '#fecaca';      // >5,000-10,000 (ชมพูอ่อน)
-      if (value <= 40000) return '#fca5a5';      // >10,000-20,000 (ชมพู)
-      if (value <= 80000) return '#f87171';      // >20,000-40,000 (แดงชมพู)
-      if (value <= 200000) return '#ef4444';     // >40,000-100,000 (แดงเข้ม)
-      return '#b91c1c';                          // >100,000 (แดงเข้มสุด)
+      if (value <= 10000) return '#f3f4f6';
+      if (value <= 20000) return '#fecaca';
+      if (value <= 40000) return '#fca5a5';
+      if (value <= 80000) return '#f87171';
+      if (value <= 200000) return '#ef4444';
+      return '#b91c1c';
     } else {
-      // สีเขียว-น้ำเงินสำหรับรวม (โทนเย็น)
       const ratio = value / maxValue;
-      if (ratio < 0.2) return '#d1fae5';         // น้อย (เขียวอ่อนมาก)
-      if (ratio < 0.4) return '#6ee7b7';         // ปานกลาง (เขียวอ่อน)
-      if (ratio < 0.6) return '#34d399';         // ปานกลาง-มาก (เขียวกลาง)
-      if (ratio < 0.8) return '#10b981';         // มาก (เขียวเข้ม)
-      return '#059669';                          // มากที่สุด (เขียวเข้มสุด)
+      if (ratio < 0.2) return '#d1fae5';
+      if (ratio < 0.4) return '#6ee7b7';
+      if (ratio < 0.6) return '#34d399';
+      if (ratio < 0.8) return '#10b981';
+      return '#059669';
     }
   }
 
   function getTextColor(bgColor) {
-    // สีพื้นหลังเข้มจะใช้ตัวอักษรสีขาว
     const darkColors = ['#3b82f6', '#1e40af', '#b45309', '#15803d', '#22c55e', '#a855f7', '#9333ea', '#6b21a8', '#c084fc', '#7c3aed',
                         '#ec4899', '#db2777', '#be185d', '#10b981', '#059669',
                         '#f43f5e', '#e11d48', '#be123c', '#f87171', '#ef4444', '#dc2626', '#b91c1c'];
@@ -498,34 +732,30 @@
   }
 
   function getBorderColor(bgColor, colorScheme, value = 0) {
-    // สำหรับ Heat Map เงินรางวัล (ชมพู-แดง) ให้เส้นขอบเข้มกว่าพื้นหลัง
     if (colorScheme === 'red') {
       const borderMap = {
-        '#f3f4f6': '#d1d5db',  // 0
-        '#fecaca': '#fca5a5',  // >5K-10K
-        '#fca5a5': '#f87171',  // >10K-20K
-        '#f87171': '#ef4444',  // >20K-40K
-        '#ef4444': '#dc2626',  // >40K-100K
-        '#b91c1c': '#991b1b'   // >100K
+        '#f3f4f6': '#d1d5db',
+        '#fecaca': '#fca5a5',
+        '#fca5a5': '#f87171',
+        '#f87171': '#ef4444',
+        '#ef4444': '#dc2626',
+        '#b91c1c': '#991b1b'
       };
-      // ถ้าสีพื้นหลังเป็น #f3f4f6 แต่มีค่ามากกว่า 0 ให้ใช้เส้นขอบเข้มกว่า
       if (bgColor === '#f3f4f6' && value > 0) {
-        return '#9ca3af';  // เส้นขอบเทาเข้มกว่าสำหรับ >0-5K
+        return '#9ca3af';
       }
       return borderMap[bgColor] || '#d1d5db';
     } else if (colorScheme === 'blue') {
-      // สำหรับ Heat Map ยอดรวม (เขียว) ให้เส้นขอบเข้มกว่าพื้นหลัง
       const borderMap = {
-        '#f3f4f6': '#d1d5db',  // 0
-        '#d1fae5': '#a7f3d0',  // น้อย
-        '#6ee7b7': '#34d399',  // ปานกลาง
-        '#34d399': '#10b981',  // ปานกลาง-มาก
-        '#10b981': '#059669',  // มาก
-        '#059669': '#047857'   // มากที่สุด
+        '#f3f4f6': '#d1d5db',
+        '#d1fae5': '#a7f3d0',
+        '#6ee7b7': '#34d399',
+        '#34d399': '#10b981',
+        '#10b981': '#059669',
+        '#059669': '#047857'
       };
       return borderMap[bgColor] || '#d1d5db';
     }
-    // สำหรับ Heat Map อื่นๆ
     return '#d1d5db';
   }
 
@@ -533,7 +763,6 @@
     const heatmapGrid = document.getElementById(gridId);
     const { rows } = summarize();
 
-    // สร้าง map ของยอดรวมแต่ละเลข
     const valueMap = new Map();
     const topMap = new Map();
     const bottomMap = new Map();
@@ -547,20 +776,16 @@
       } else if (valueType === 'bottom') {
         valueMap.set(r.key, r.bottomSum);
       } else if (valueType === 'split') {
-        // สำหรับแสดงทั้งบนและล่าง ใช้ยอดรวมในการคำนวณสี
         valueMap.set(r.key, r.totalSum);
       } else if (valueType === 'prize') {
-        // สำหรับแสดงเงินรางวัล ใช้ยอดรวมเงินรางวัล (บน + ล่าง) * 70
         valueMap.set(r.key, (r.topSum + r.bottomSum) * 70);
       } else {
         valueMap.set(r.key, r.totalSum);
       }
     });
 
-    // หาค่าสูงสุด
     const maxValue = Math.max(...Array.from(valueMap.values()), 1);
 
-    // สร้างเซลล์ตามลำดับที่กำหนด
     const displayOrder = getDisplayOrder(pairMode);
     heatmapGrid.innerHTML = '';
     for (const key of displayOrder) {
@@ -579,10 +804,7 @@
       cell.style.borderWidth = '3px';
       cell.dataset.key = key;
 
-      // สร้างโครงสร้าง HTML ภายในเซลล์
       if (valueType === 'split') {
-        // แสดงบนและล่างแยกกัน
-        // ถ้าค่าเกิน 99,999 ให้ลบ label "บน" "ล่าง" ออก
         const showLabel = topValue <= 99999 && bottomValue <= 99999;
         cell.innerHTML = `
           <div class="heatmap-cell-value">${topValue > 0 ? (showLabel ? '<span class="heatmap-cell-label">บน</span> ' : '') + money(topValue) : ''}</div>
@@ -591,10 +813,8 @@
         `;
         cell.title = `${key}: บน ${money(topValue)}, ล่าง ${money(bottomValue)} บาท`;
       } else if (valueType === 'prize') {
-        // แสดงเงินรางวัลบนและล่างแยกกัน
         const prizeTop = topValue * 70;
         const prizeBottom = bottomValue * 70;
-        // ถ้าค่าเงินรางวัลเกิน 100,000 ให้ลบ label "บน" "ล่าง" ออก
         const showLabel = prizeTop <= 99999 && prizeBottom <= 99999;
         cell.innerHTML = `
           <div class="heatmap-cell-value">${prizeTop > 0 ? (showLabel ? '<span class="heatmap-cell-label">บน</span> ' : '') + money(prizeTop) : ''}</div>
@@ -617,13 +837,10 @@
         }
       }
 
-      // เพิ่ม hover effect เพื่อแสดงคู่ตัวเลข
       const showHighlight = () => {
         if (isDoubleNumber(key)) {
-          // เลขซ้ำใช้สีเขียว
           cell.classList.add('highlight-double');
         } else {
-          // เลขคู่ใช้สีทอง
           const pairKey = getPairNumber(key);
           const pairCell = heatmapGrid.querySelector(`[data-key="${pairKey}"]`);
           if (pairCell) {
@@ -647,21 +864,17 @@
       };
 
       const toggleHighlight = () => {
-        // ลบ highlight ทั้งหมดก่อน
         const allCells = heatmapGrid.querySelectorAll('.heatmap-cell');
         allCells.forEach(c => {
           c.classList.remove('highlight-double', 'highlight-pair');
         });
 
-        // เช็คว่า cell นี้เคยถูก highlight อยู่หรือไม่
         const wasHighlighted = cell.dataset.highlighted === 'true';
 
-        // รีเซ็ต flag ทั้งหมด
         allCells.forEach(c => {
           c.dataset.highlighted = 'false';
         });
 
-        // ถ้าไม่เคย highlight อยู่ ให้ highlight ใหม่
         if (!wasHighlighted) {
           if (isDoubleNumber(key)) {
             cell.classList.add('highlight-double');
@@ -679,11 +892,8 @@
         }
       };
 
-      // Mouse events for desktop
       cell.addEventListener('mouseenter', showHighlight);
       cell.addEventListener('mouseleave', hideHighlight);
-
-      // Touch events for mobile/tablet - toggle on/off
       cell.addEventListener('touchstart', (e) => {
         e.preventDefault();
         toggleHighlight();
@@ -701,161 +911,276 @@
     renderHeatmapGeneric('heatmapGridPrize', 'prize', 'red', pairModeActive.prize);
   }
 
-  function shortenDraw(draw) {
-    // แปลง "มกราคม 2568 งวด 1" เป็น "ม.ค. 68 งวด 1"
-    const monthMap = {
-      'มกราคม': 'ม.ค.', 'กุมภาพันธ์': 'ก.พ.', 'มีนาคม': 'มี.ค.',
-      'เมษายน': 'เม.ย.', 'พฤษภาคม': 'พ.ค.', 'มิถุนายน': 'มิ.ย.',
-      'กรกฎาคม': 'ก.ค.', 'สิงหาคม': 'ส.ค.', 'กันยายน': 'ก.ย.',
-      'ตุลาคม': 'ต.ค.', 'พฤศจิกายน': 'พ.ย.', 'ธันวาคม': 'ธ.ค.'
-    };
-
-    let result = draw;
-    for (const [full, short] of Object.entries(monthMap)) {
-      result = result.replace(full, short);
-    }
-    // แปลงปี 2568 เป็น 68
-    result = result.replace(/\s(\d{2})(\d{2})\s/g, ' $2 ');
-    return result;
+  // ===== Draw display =====
+  function formatDrawFull() {
+    const parts = [];
+    if (draw.month) parts.push(draw.month);
+    if (draw.year) parts.push(draw.year);
+    let s = parts.join(' ');
+    if (draw.drawNumber) s += (s ? ' · ' : '') + 'งวดที่ ' + draw.drawNumber;
+    return s || 'ยังไม่ได้เลือกงวด';
   }
 
-  function render() {
-    // Raw list
-    if (items.length === 0) {
-      rawList.textContent = 'ยังไม่มีรายการ';
+  function updateDrawBadge() {
+    drawBadge.textContent = formatDrawFull();
+  }
+
+  function syncDrawSeg() {
+    drawSeg.querySelectorAll('button').forEach(b => {
+      b.classList.toggle('active', b.dataset.draw === draw.drawNumber);
+    });
+  }
+
+  // ===== Render cards (chips + boxes) =====
+  function renderCards() {
+    // newest card first
+    const ordered = cards.slice().reverse();
+
+    // chips: latest 3 (newest first) unless expanded; การ์ดที่เลือกอยู่จะแสดงเสมอ
+    const chipHtml = (c) => {
+      const active = c.id === activeCardId ? ' active' : '';
+      return `<button type="button" class="chip${active}" onclick="selectCard('${c.id}')">
+        <span class="chip-name">${escapeHtml(c.name)}</span>
+        <span class="chip-count">${c.items.length}</span>
+      </button>`;
+    };
+
+    let chipCards;
+    if (showAllChips || cards.length <= 3) {
+      chipCards = ordered;
     } else {
-      const reversedItems = items.slice().reverse();
-      const displayItems = showAllItems ? reversedItems : reversedItems.slice(0, 5);
-
-      const itemsHtml = displayItems
-        .map((it, revIdx) => {
-          const idx = items.length - 1 - revIdx;
-          const isLatest = revIdx === 0;
-          const itemClass = isLatest ? 'raw-item raw-item-latest' : 'raw-item';
-          const shortDraw = shortenDraw(it.draw);
-          return `
-            <div class="${itemClass}">
-              <button class="delete-btn" onclick="deleteItem(${idx})">ลบ</button><span><b>${idx + 1}.</b> [${shortDraw}] ${it.key} → บน: ${money(it.top)}, ล่าง: ${money(it.bottom)}</span>
-            </div>
-          `;
-        })
-        .join('');
-
-      const showAllButton = items.length > 5 && !showAllItems
-        ? `<button class="show-all-btn" onclick="toggleShowAll()">ดูทั้งหมด (${items.length} รายการ)</button>`
-        : items.length > 5 && showAllItems
-        ? `<button class="show-all-btn" onclick="toggleShowAll()">ย่อรายการ</button>`
-        : '';
-
-      rawList.innerHTML = itemsHtml + showAllButton;
+      chipCards = ordered.slice(0, 3);
+      const ac = getActiveCard();
+      if (ac && !chipCards.some(c => c.id === ac.id)) chipCards = chipCards.concat([ac]);
     }
 
-    // Summary
+    let chips = chipCards.map(chipHtml).join('');
+    if (cards.length > 3) {
+      chips += showAllChips
+        ? `<button type="button" class="chip chip-toggle" onclick="toggleShowAllChips()">▲ ย่อ</button>`
+        : `<button type="button" class="chip chip-toggle" onclick="toggleShowAllChips()">+${cards.length - chipCards.length} เพิ่มเติม</button>`;
+    }
+    cardTabs.innerHTML = chips;
+
+    // boxes: show only the latest 3 unless expanded
+    const visible = showAllCards ? ordered : ordered.slice(0, 3);
+    let boxesHtml = visible.map(c => renderCardBox(c)).join('');
+    if (cards.length > 3) {
+      boxesHtml += showAllCards
+        ? `<div class="cards-toggle"><button class="show-all-btn" onclick="toggleShowAllCards()">ย่อการ์ด</button></div>`
+        : `<div class="cards-toggle"><button class="show-all-btn" onclick="toggleShowAllCards()">ดูการ์ดทั้งหมด (${cards.length} การ์ด)</button></div>`;
+    }
+    cardsSection.innerHTML = boxesHtml;
+
+    // active card name in add button
+    const ac = getActiveCard();
+    activeCardName.textContent = ac ? ac.name : '';
+  }
+
+  function renderCardBox(c) {
+    const active = c.id === activeCardId;
+    let topSum = 0, bottomSum = 0;
+    c.items.forEach(it => { topSum += it.top; bottomSum += it.bottom; });
+    const total = topSum + bottomSum;
+
+    const itemsHtml = c.items.length
+      ? c.items.map((it, idx) => `
+          <div class="ci-row">
+            <span class="ci-key">${escapeHtml(it.key)}</span>
+            <span class="ci-amt">
+              ${it.top > 0 ? `<span class="tag tag-top">บน ${money(it.top)}</span>` : ''}
+              ${it.bottom > 0 ? `<span class="tag tag-bottom">ล่าง ${money(it.bottom)}</span>` : ''}
+            </span>
+            <button class="ci-del" title="ลบรายการ" onclick="deleteItem('${c.id}', ${idx})">✕</button>
+          </div>
+        `).join('')
+      : `<div class="ci-empty">ยังไม่มีรายการในการ์ดนี้</div>`;
+
+    return `
+      <div class="cardbox${active ? ' active' : ''}">
+        <div class="cardbox-head" onclick="selectCard('${c.id}')">
+          <div class="cardbox-title">
+            <span class="dot"></span>
+            <span class="cardbox-name">${escapeHtml(c.name)}</span>
+            <span class="cardbox-badge">${c.items.length} รายการ</span>
+          </div>
+          <div class="cardbox-tools">
+            <button class="icon-btn" title="เปลี่ยนชื่อการ์ด" onclick="event.stopPropagation();renameCard('${c.id}')">✎</button>
+            <button class="icon-btn danger" title="ลบการ์ด" onclick="event.stopPropagation();deleteCard('${c.id}')">🗑</button>
+          </div>
+        </div>
+        <div class="cardbox-sub">บน ${money(topSum)} · ล่าง ${money(bottomSum)} · รวม <b>${money(total)}</b></div>
+        <div class="cardbox-items">${itemsHtml}</div>
+      </div>
+    `;
+  }
+
+  // ===== Render summary table =====
+  function renderSummary() {
     const { rows, grand, grandTop, grandBottom } = summarize();
-    const displayRows = showAllTableRows ? rows : rows.slice(0, 5);
+    const allCount = getAllItems().length;
 
-    summaryBody.innerHTML = displayRows.map(r => `
-      <tr>
-        <td>${r.key}</td>
-        <td>${r.count}</td>
-        <td>${money(r.topSum)}<br><small style="color: #6b7280;">รางวัล: ${money(r.topSum * 70)}</small></td>
-        <td>${money(r.bottomSum)}<br><small style="color: #6b7280;">รางวัล: ${money(r.bottomSum * 70)}</small></td>
-        <td>${money(r.totalSum)}</td>
-      </tr>
-    `).join('');
+    if (rows.length === 0) {
+      summaryBody.innerHTML = `<tr><td class="empty" colspan="5">ยังไม่มีรายการ — เพิ่มรายการเข้าการ์ดเพื่อดูสรุป</td></tr>`;
+    } else {
+      const displayRows = showAllTableRows ? rows : rows.slice(0, 5);
+      summaryBody.innerHTML = displayRows.map(r => `
+        <tr>
+          <td>${r.key}</td>
+          <td>${r.count}</td>
+          <td>${money(r.topSum)}<br><small style="color:#6b7280;">รางวัล: ${money(r.topSum * 70)}</small></td>
+          <td>${money(r.bottomSum)}<br><small style="color:#6b7280;">รางวัล: ${money(r.bottomSum * 70)}</small></td>
+          <td>${money(r.totalSum)}</td>
+        </tr>
+      `).join('');
 
-    // เพิ่มปุ่มแสดง/ซ่อนแถวตาราง
-    if (rows.length > 5) {
-      const toggleButton = showAllTableRows
-        ? `<tr><td colspan="5" style="text-align: center; padding: 8px;"><button class="show-all-btn" onclick="toggleShowAllTable()">ย่อตาราง</button></td></tr>`
-        : `<tr><td colspan="5" style="text-align: center; padding: 8px;"><button class="show-all-btn" onclick="toggleShowAllTable()">ดูทั้งหมด (${rows.length} ตัวเลข)</button></td></tr>`;
-      summaryBody.innerHTML += toggleButton;
+      if (rows.length > 5) {
+        const toggleButton = showAllTableRows
+          ? `<tr><td colspan="5" style="text-align:center;padding:8px;"><button class="show-all-btn" onclick="toggleShowAllTable()">ย่อตาราง</button></td></tr>`
+          : `<tr><td colspan="5" style="text-align:center;padding:8px;"><button class="show-all-btn" onclick="toggleShowAllTable()">ดูทั้งหมด (${rows.length} ตัวเลข)</button></td></tr>`;
+        summaryBody.innerHTML += toggleButton;
+      }
     }
 
-    // อัพเดทยอดรวมใน footer - แสดงเฉพาะยอดรวม ไม่แสดงเงินรางวัล
-    totalCountEl.textContent = items.length;
+    totalCountEl.textContent = allCount;
     grandPrizeTopEl.textContent = money(grandTop);
     grandPrizeBottomEl.textContent = money(grandBottom);
     grandTotalEl.textContent = money(grand);
+  }
 
-    // Render heatmaps
+  // ===== Master render =====
+  function render() {
+    renderCards();
+    renderSummary();
     renderHeatmap();
     renderHeatmapPrize();
   }
 
-  // Validate drawNumberInput to allow only 1 or 2
-  drawNumberInput.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/[^12]/g, '');
-  });
-
-  // Validate yearInput to allow only 4 digits
-  yearInput.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
-  });
-
-  // Validate keyInput to allow only 2 digits
-  keyInput.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
-  });
-
-  // ฟังก์ชันเพิ่มจำนวนเงินในช่อง input
+  // ===== Quick-add helpers (verbatim) =====
   window.addToInput = function(inputId, amount) {
     const input = document.getElementById(inputId);
     const currentValue = parseAmount(input.value) || 0;
     input.value = currentValue + amount;
-  }
+  };
 
-  // ฟังก์ชันเพิ่มจำนวนเงินทั้งบนและล่าง
   window.addToBothInputs = function(amount) {
     const topCurrentValue = parseAmount(topInput.value) || 0;
     const bottomCurrentValue = parseAmount(bottomInput.value) || 0;
     topInput.value = topCurrentValue + amount;
     bottomInput.value = bottomCurrentValue + amount;
-  }
+  };
 
+  // ===== Input validation =====
+  yearInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+    draw.year = e.target.value;
+    saveDraw();
+    updateDrawBadge();
+  });
+
+  monthSelect.addEventListener('change', (e) => {
+    draw.month = e.target.value;
+    saveDraw();
+    updateDrawBadge();
+  });
+
+  drawSeg.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // toggle off if same value clicked again
+      draw.drawNumber = (draw.drawNumber === btn.dataset.draw) ? '' : btn.dataset.draw;
+      saveDraw();
+      syncDrawSeg();
+      updateDrawBadge();
+    });
+  });
+
+  keyInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
+  });
+
+  // Enter key adds the item
+  [keyInput, topInput, bottomInput].forEach(inp => {
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addBtn.click();
+      }
+    });
+  });
+
+  // ===== Buttons =====
   addBtn.addEventListener('click', () => {
-    addItem(drawNumberInput.value, monthSelect.value, yearInput.value, keyInput.value, topInput.value, bottomInput.value);
-    keyInput.value = '';
-    topInput.value = '';
-    bottomInput.value = '';
-    keyInput.focus();
+    if (addItem(keyInput.value, topInput.value, bottomInput.value)) {
+      keyInput.value = '';
+      topInput.value = '';
+      bottomInput.value = '';
+      keyInput.focus();
+    }
   });
 
   clearBtn.addEventListener('click', () => {
-    if (items.length === 0) return;
-    if (confirm('คุณต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) {
-      items.length = 0;
-      saveToStorage();
+    if (getAllItems().length === 0 && cards.length <= 1) return;
+    if (confirm('ต้องการล้างข้อมูลทั้งหมด (ทุกการ์ดและทุกรายการ) ใช่หรือไม่?')) {
+      cards = [{ id: genId(), name: '#1', items: [] }];
+      activeCardId = cards[0].id;
+      saveCards();
+      saveActive();
       render();
     }
   });
 
   exportBtn.addEventListener('click', async () => {
+    const allItems = getAllItems();
+    if (allItems.length === 0) { alert('ยังไม่มีรายการให้คัดลอก'); return; }
+
     const { rows, grand, grandTop, grandBottom } = summarize();
+    const lines = [];
+    lines.push('สรุปหวย — ' + formatDrawFull());
+    lines.push('');
 
-    // รวบรวมงวดทั้งหมดที่มีในข้อมูล
-    const draws = [...new Set(items.map(it => it.draw))].sort();
-    const drawsText = draws.length > 0 ? `งวด: ${draws.join(', ')}\n` : '';
+    cards.forEach(c => {
+      if (c.items.length === 0) return;
+      let ct = 0, cb = 0;
+      lines.push(`📁 ${c.name}`);
+      c.items.forEach(it => {
+        ct += it.top; cb += it.bottom;
+        lines.push(`   ${it.key} → บน ${money(it.top)} / ล่าง ${money(it.bottom)} / รวม ${money(it.top + it.bottom)}`);
+      });
+      lines.push(`   รวมการ์ด: บน ${money(ct)} / ล่าง ${money(cb)} / รวม ${money(ct + cb)}`);
+      lines.push('');
+    });
 
-    const text = [
-      'สรุปรวมเงินตามตัวเลข',
-      drawsText,
-      ...rows.map(r => `เลข: ${r.key} / จำนวนรายการ: ${r.count} / บน: ${money(r.topSum)} / ล่าง: ${money(r.bottomSum)} / รวม: ${money(r.totalSum)}`),
-      '',
-      `รวมทั้งหมด / จำนวนรายการทั้งหมด: ${items.length} / บน: ${money(grandTop)} / ล่าง: ${money(grandBottom)} / รวม: ${money(grand)}`
-    ].join('\n');
+    lines.push('— สรุปตามเลข (รวมทุกการ์ด) —');
+    rows.forEach(r => {
+      lines.push(`เลข ${r.key} | จำนวน ${r.count} | บน ${money(r.topSum)} | ล่าง ${money(r.bottomSum)} | รวม ${money(r.totalSum)}`);
+    });
+    lines.push('');
+    lines.push(`รวมทั้งหมด | จำนวน ${allItems.length} | บน ${money(grandTop)} | ล่าง ${money(grandBottom)} | รวม ${money(grand)}`);
 
+    const text = lines.join('\n');
     try {
       await navigator.clipboard.writeText(text);
       alert('คัดลอกสรุปแล้ว');
     } catch {
-      // fallback
       prompt('คัดลอกเองจากช่องนี้:', text);
     }
   });
 
+  // ===== Init =====
+  function initDrawInputs() {
+    if (!draw.year) {
+      draw.year = String(new Date().getFullYear() + 543); // ปี พ.ศ.
+      saveDraw();
+    }
+    monthSelect.value = draw.month || '';
+    yearInput.value = draw.year || '';
+    syncDrawSeg();
+    updateDrawBadge();
+  }
+
   initMonthOptions();
-  loadLastDraw();
+  loadData();
+  initDrawInputs();
   render();
 </script>
 </body>
