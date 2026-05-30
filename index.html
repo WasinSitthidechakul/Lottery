@@ -1266,7 +1266,9 @@
     const total = topSum + bottomSum + straightSum + toteSum;
 
     const itemsHtml = c.items.length
-      ? c.items.map((it, idx) => {
+      ? c.items.map((it, idx) => ({ it, idx }))   // keep original index for deleteItem
+          .reverse()                              // newest item shows on top
+          .map(({ it, idx }) => {
           const is3 = String(it.key).length === 3;
           const tags = is3
             ? `${(it.straight || 0) > 0 ? `<span class="tag tag-straight">ตรง ${money(it.straight)}</span>` : ''}
