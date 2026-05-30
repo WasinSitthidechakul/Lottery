@@ -184,6 +184,76 @@
     .heatmap-cell.highlight-pair{box-shadow:0 0 0 3px #1e40af,0 0 12px rgba(30,64,175,0.5);z-index:20;}
     .heatmap-cell.highlight-double{box-shadow:0 0 0 3px #8b5cf6,0 0 12px rgba(139,92,246,0.5);z-index:20;}
 
+    /* ===== Tabs nav (top-level 4 tabs) ===== */
+    .tabs-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--surface);
+      border:1px solid var(--border);border-radius:var(--radius);padding:6px;box-shadow:var(--shadow-sm);
+      position:sticky;top:8px;z-index:30;}
+    .tab-btn{border:0;background:transparent;color:var(--muted);font-weight:700;font-size:14px;
+      padding:11px 6px;border-radius:10px;cursor:pointer;transition:all .15s;white-space:nowrap;
+      overflow:hidden;text-overflow:ellipsis;}
+    .tab-btn:hover{background:var(--surface-soft);color:var(--text);}
+    .tab-btn.active{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(79,70,229,.25);}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:flex;flex-direction:column;gap:16px;}
+
+    /* ===== Add panel (2 vs 3 digit) ===== */
+    .add-grid-2{grid-template-columns:1fr 1fr;}
+    .amt-head{display:flex;align-items:center;gap:8px;margin:2px 0 6px;}
+    .amt-head .field-label{margin:0;}
+    .mult-badge{font-size:12px;font-weight:800;color:var(--primary-dark);background:var(--primary-soft);
+      border:1px solid #dfe3ff;border-radius:999px;padding:2px 9px;}
+    .mult-badge.gold{color:#92400e;background:#fef3c7;border-color:#fde68a;}
+    .quick-add.compact{margin-bottom:10px;}
+    .data-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+    /* ===== 3-digit sub-tabs (leading digit 0-9) ===== */
+    .sub-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px;}
+    .sub-tab{position:relative;border:2px solid #e5e7eb;background:var(--surface-soft);color:#111827;
+      border-radius:12px;padding:8px 4px;cursor:pointer;transition:transform .12s,box-shadow .15s,border-color .15s;
+      display:flex;flex-direction:column;align-items:center;gap:1px;}
+    .sub-tab:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+    .sub-tab.active{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.35);}
+    .sub-tab-d{font-size:19px;font-weight:800;line-height:1;color:inherit;}
+    .sub-tab-label{font-size:11px;font-weight:600;color:inherit;opacity:.78;}
+    .sub-tab-count{position:absolute;top:-7px;right:-6px;background:var(--danger);color:#fff;
+      font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:999px;
+      display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff;}
+
+    /* ===== Ranked exposure (3-digit) ===== */
+    .rank-head{font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;}
+    .rank-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+    .rank-key{font-weight:800;font-size:16px;font-variant-numeric:tabular-nums;min-width:46px;
+      text-align:center;background:var(--surface-soft);border:1px solid var(--border);border-radius:8px;padding:3px 6px;}
+    .rank-bar-wrap{flex:1;height:12px;background:var(--surface-soft);border-radius:999px;overflow:hidden;border:1px solid var(--border);}
+    .rank-bar{height:100%;background:linear-gradient(90deg,#34d399,#059669);border-radius:999px;}
+    .rank-val{font-weight:700;font-size:14px;min-width:90px;text-align:right;font-variant-numeric:tabular-nums;}
+    .rank-foot{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-size:14px;color:var(--muted);}
+
+    /* ===== Winner check ===== */
+    .win-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px;}
+    .win-section-label{font-size:13px;font-weight:700;color:var(--muted);margin:6px 0 8px;
+      letter-spacing:.03em;text-transform:uppercase;}
+    .win-divider{height:1px;background:var(--border);margin:16px 0;}
+    .win-empty{padding:22px;text-align:center;color:var(--muted);font-size:14px;
+      background:var(--surface-soft);border:1px dashed var(--border-strong);border-radius:12px;}
+    .win-summary{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:4px;}
+    .win-chip{background:var(--surface-soft);border:1px solid var(--border-strong);border-radius:999px;
+      padding:6px 12px;font-size:14px;font-weight:600;}
+    .win-chip b{font-size:16px;color:var(--primary-dark);}
+    .win-grand{margin-left:auto;background:#fef3c7;color:#92400e;border:1px solid #fde68a;
+      border-radius:999px;padding:7px 14px;font-weight:800;font-size:15px;}
+    .win-cardbox{border-color:#fcd34d;box-shadow:0 0 0 2px #fef3c7;}
+    .win-cardbox .cardbox-head{background:linear-gradient(180deg,#fffdf5,#fef9ec);}
+    .win-card-total{font-weight:800;color:#b45309;font-size:16px;flex:none;}
+    .win-row{background:#f0fdf4;}
+    .win-row .win-prize{font-weight:800;color:#059669;font-size:15px;flex:none;margin-left:auto;}
+    .win-row-miss{opacity:.6;}
+    .win-miss{font-size:12px;font-weight:700;color:var(--muted);flex:none;margin-left:auto;
+      background:var(--surface-soft);border:1px solid var(--border);border-radius:999px;padding:2px 9px;}
+    .tag-straight{background:#dbeafe;color:#1e40af;}
+    .tag-tote{background:#ede9fe;color:#6d28d9;}
+    .tag-3d{background:#e0e7ff;color:#3730a3;}
+
     @media (max-width:720px){
       body{padding:14px 10px 48px;}
       .panel{padding:14px;}
@@ -197,6 +267,13 @@
       .pair-mode-btn{margin-left:10px;width:auto;padding:8px 10px;font-size:13px;}
       .heatmap-cell.highlight-pair{box-shadow:0 0 0 2px #1e40af,0 0 8px rgba(30,64,175,0.5);z-index:20;}
       .heatmap-cell.highlight-double{box-shadow:0 0 0 2px #8b5cf6,0 0 8px rgba(139,92,246,0.5);z-index:20;}
+      .tabs-nav{gap:4px;padding:5px;}
+      .tab-btn{font-size:12px;padding:10px 3px;}
+      .win-grid{grid-template-columns:1fr;}
+      .sub-tabs{grid-template-columns:repeat(5,1fr);gap:5px;}
+      .sub-tab-d{font-size:16px;}
+      .sub-tab-label{font-size:9px;}
+      .rank-val{min-width:74px;font-size:13px;}
     }
   </style>
 </head>
@@ -206,6 +283,15 @@
       <h1>💰 ตารางคำนวณหวย</h1>
       <p class="subtitle">รวมยอดอัตโนมัติ · จัดกลุ่มเป็นการ์ด · ดู Heat Map</p>
     </header>
+
+    <nav class="tabs-nav" id="tabsNav">
+      <button type="button" class="tab-btn active" data-tab="input">📝 กรอกข้อมูล</button>
+      <button type="button" class="tab-btn" data-tab="2d">📊 สรุป 2 หลัก</button>
+      <button type="button" class="tab-btn" data-tab="3d">🎯 สรุป 3 หลัก</button>
+      <button type="button" class="tab-btn" data-tab="win">🏆 ตรวจรางวัล</button>
+    </nav>
+
+    <div class="tab-panel active" id="tab-input">
 
     <!-- งวด (Global) -->
     <section class="panel">
@@ -239,30 +325,69 @@
       </div>
       <div class="card-tabs" id="cardTabs"></div>
 
-      <div class="add-grid">
-        <div class="field">
-          <label for="keyInput">เลขที่ซื้อ</label>
-          <input id="keyInput" inputmode="numeric" placeholder="เช่น 12" maxlength="2" />
-        </div>
-        <div class="field">
-          <label for="topInput">บน</label>
-          <input id="topInput" inputmode="decimal" placeholder="เช่น 100" />
-        </div>
-        <div class="field">
-          <label for="bottomInput">ล่าง</label>
-          <input id="bottomInput" inputmode="decimal" placeholder="เช่น 100" />
+      <div class="field" style="margin-bottom:14px;">
+        <label>ประเภทเลข</label>
+        <div class="seg" id="digitSeg">
+          <button type="button" data-digit="2" class="active">2 หลัก (00–99)</button>
+          <button type="button" data-digit="3">3 หลัก (000–999)</button>
         </div>
       </div>
 
-      <div class="quick-add">
-        <button type="button" onclick="addToBothInputs(5)">+5</button>
-        <button type="button" onclick="addToBothInputs(10)">+10</button>
-        <button type="button" onclick="addToBothInputs(20)">+20</button>
-        <button type="button" onclick="addToBothInputs(30)">+30</button>
-        <button type="button" onclick="addToBothInputs(50)">+50</button>
-        <button type="button" onclick="addToBothInputs(100)">+100</button>
-        <button type="button" onclick="addToBothInputs(150)">+150</button>
-        <button type="button" onclick="addToBothInputs(200)">+200</button>
+      <div class="field" style="margin-bottom:14px;">
+        <label for="keyInput">เลขที่ซื้อ</label>
+        <input id="keyInput" inputmode="numeric" placeholder="เช่น 12" maxlength="2" />
+      </div>
+
+      <!-- 2 หลัก: บน / ล่าง (กดเพิ่มทีเดียวทั้งคู่) -->
+      <div id="amt2d">
+        <div class="add-grid add-grid-2">
+          <div class="field">
+            <label for="topInput">บน</label>
+            <input id="topInput" inputmode="decimal" placeholder="เช่น 100" />
+          </div>
+          <div class="field">
+            <label for="bottomInput">ล่าง</label>
+            <input id="bottomInput" inputmode="decimal" placeholder="เช่น 100" />
+          </div>
+        </div>
+        <div class="quick-add">
+          <button type="button" onclick="addToBothInputs(5)">+5</button>
+          <button type="button" onclick="addToBothInputs(10)">+10</button>
+          <button type="button" onclick="addToBothInputs(20)">+20</button>
+          <button type="button" onclick="addToBothInputs(30)">+30</button>
+          <button type="button" onclick="addToBothInputs(50)">+50</button>
+          <button type="button" onclick="addToBothInputs(100)">+100</button>
+          <button type="button" onclick="addToBothInputs(150)">+150</button>
+          <button type="button" onclick="addToBothInputs(200)">+200</button>
+        </div>
+      </div>
+
+      <!-- 3 หลัก: ตรง / โต๊ด (กดเพิ่มแยกกัน ไม่ต้องเท่ากัน) -->
+      <div id="amt3d" style="display:none;">
+        <div class="amt-head"><span class="field-label">ตรง</span></div>
+        <input id="straightInput" inputmode="decimal" placeholder="เช่น 50" style="margin-bottom:8px;" />
+        <div class="quick-add compact">
+          <button type="button" onclick="addToInput('straightInput',5)">+5</button>
+          <button type="button" onclick="addToInput('straightInput',10)">+10</button>
+          <button type="button" onclick="addToInput('straightInput',20)">+20</button>
+          <button type="button" onclick="addToInput('straightInput',30)">+30</button>
+          <button type="button" onclick="addToInput('straightInput',50)">+50</button>
+          <button type="button" onclick="addToInput('straightInput',100)">+100</button>
+          <button type="button" onclick="addToInput('straightInput',150)">+150</button>
+          <button type="button" onclick="addToInput('straightInput',200)">+200</button>
+        </div>
+        <div class="amt-head"><span class="field-label">โต๊ด</span></div>
+        <input id="toteInput" inputmode="decimal" placeholder="เช่น 50" style="margin-bottom:8px;" />
+        <div class="quick-add compact">
+          <button type="button" onclick="addToInput('toteInput',5)">+5</button>
+          <button type="button" onclick="addToInput('toteInput',10)">+10</button>
+          <button type="button" onclick="addToInput('toteInput',20)">+20</button>
+          <button type="button" onclick="addToInput('toteInput',30)">+30</button>
+          <button type="button" onclick="addToInput('toteInput',50)">+50</button>
+          <button type="button" onclick="addToInput('toteInput',100)">+100</button>
+          <button type="button" onclick="addToInput('toteInput',150)">+150</button>
+          <button type="button" onclick="addToInput('toteInput',200)">+200</button>
+        </div>
       </div>
 
       <button class="btn btn-primary btn-block" id="addBtn">➕ เพิ่มเข้า “<span id="activeCardName"></span>”</button>
@@ -271,15 +396,22 @@
     <!-- การ์ดทั้งหมด -->
     <section class="cards-section" id="cardsSection"></section>
 
-    <!-- สรุปตามเลข -->
+    <!-- ปุ่มจัดการข้อมูล (ใช้ได้ทั้ง 2 และ 3 หลัก) -->
     <section class="panel">
-      <div class="panel-head">
-        <div class="panel-label">สรุปยอดตามเลข · รวมทุกการ์ด</div>
-        <div class="panel-actions">
-          <button class="btn btn-soft" id="exportBtn">📋 คัดลอกสรุป</button>
-          <button class="btn btn-danger" id="clearBtn">🗑 ล้างทั้งหมด</button>
-        </div>
+      <div class="panel-label">จัดการข้อมูล · ทุกการ์ด (2 + 3 หลัก)</div>
+      <div class="data-actions">
+        <button class="btn btn-soft" id="exportBtn">📋 คัดลอกสรุป</button>
+        <button class="btn btn-danger" id="clearBtn">🗑 ล้างข้อมูลทั้งหมด</button>
       </div>
+    </section>
+
+    </div><!-- /tab-input -->
+
+    <div class="tab-panel" id="tab-2d">
+
+    <!-- สรุปตามเลข (2 หลัก) -->
+    <section class="panel">
+      <div class="panel-label">สรุปยอดตามเลข 2 หลัก · รวมทุกการ์ด</div>
       <table>
         <thead>
           <tr>
@@ -337,6 +469,89 @@
       </div>
     </section>
 
+    </div><!-- /tab-2d -->
+
+    <!-- สรุป 3 หลัก -->
+    <div class="tab-panel" id="tab-3d">
+      <section class="panel">
+        <div class="panel-label">สรุปยอดตามเลข 3 หลัก · รวมทุกการ์ด</div>
+        <div id="top3dList"></div>
+        <div class="muted" style="margin:4px 0 8px;">แท็บหลักร้อย 0–9 · ความเข้มของสี = ยอดซื้อรวมของหลักร้อยนั้น (ยิ่งเข้ม = ยิ่งมาก)</div>
+        <div class="sub-tabs" id="hundredTabs"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>ตัวเลข</th>
+              <th>จำนวน</th>
+              <th>ตรง (×500)</th>
+              <th>โต๊ด (×100)</th>
+              <th>รวมยอดซื้อ</th>
+            </tr>
+          </thead>
+          <tbody id="summary3dBody"></tbody>
+          <tfoot>
+            <tr>
+              <td class="total">รวมหลักร้อยนี้</td>
+              <td class="total"></td>
+              <td class="total" id="sum3dStraight">0</td>
+              <td class="total" id="sum3dTote">0</td>
+              <td class="total" id="sum3dTotal">0</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="muted">เงินรางวัล: ตรง = ยอดซื้อ × 500 · โต๊ด = ยอดซื้อ × 100 • กดแท็บเลข 0–9 ด้านบนเพื่อดูแต่ละหลักร้อย</div>
+      </section>
+
+      <section class="panel">
+        <div class="heatmap-container">
+          <div class="heatmap-title"><span id="viz3dTitle">ภาพรวม 3 หลัก</span></div>
+          <div id="heatmap3dGrid" class="heatmap-grid heatmap-grid-large"></div>
+          <div class="heatmap-legend">
+            <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#f3f4f6;"></div><span>0</span></div>
+            <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#dcfce7;"></div><span>น้อย</span></div>
+            <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#86efac;"></div><span>ปานกลาง</span></div>
+            <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#4ade80;"></div><span>ค่อนข้างมาก</span></div>
+            <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#22c55e;"></div><span>มาก</span></div>
+            <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#15803d;color:#fff;"></div><span>มากที่สุด</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ตรวจรางวัล -->
+    <div class="tab-panel" id="tab-win">
+      <section class="panel">
+        <div class="panel-label">ใส่เลขที่ถูกรางวัล</div>
+
+        <div class="win-section-label">แบบ 2 หลัก (เทียบตรงๆ)</div>
+        <div class="win-grid">
+          <div class="field">
+            <label for="win2TopInput">บน (2 หลัก)</label>
+            <input id="win2TopInput" inputmode="numeric" placeholder="เช่น 12" maxlength="2" />
+          </div>
+          <div class="field">
+            <label for="win2BottomInput">ล่าง (2 หลัก)</label>
+            <input id="win2BottomInput" inputmode="numeric" placeholder="เช่น 34" maxlength="2" />
+          </div>
+        </div>
+
+        <div class="win-divider"></div>
+
+        <div class="win-section-label">แบบ 3 หลัก (ตรง = เทียบตรงๆ · โต๊ด = สลับเลขแล้วตรง)</div>
+        <div class="field">
+          <label for="win3Input">เลข 3 หลักที่ออก</label>
+          <input id="win3Input" inputmode="numeric" placeholder="เช่น 123" maxlength="3" />
+        </div>
+
+        <div class="muted">เงินรางวัล: 2 หลัก × 70 · 3 หลักตรง × 500 · 3 หลักโต๊ด × 100</div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-label">การ์ดที่มีเลขถูกรางวัล</div>
+        <div id="winResults" class="cards-section"></div>
+      </section>
+    </div>
+
   </div>
 
 <script>
@@ -355,6 +570,8 @@
   let showAllCards = false;
   let showAllChips = false;
   let pairModeActive = { prize: false, total: false };
+  let digitMode = '2';          // '2' = สองหลัก, '3' = สามหลัก
+  let active3dHundred = '0';     // แท็บหลักร้อยของตาราง 3 หลัก (0-9)
 
   // ===== DOM refs =====
   const monthSelect    = document.getElementById('monthSelect');
@@ -364,6 +581,11 @@
   const keyInput       = document.getElementById('keyInput');
   const topInput       = document.getElementById('topInput');
   const bottomInput    = document.getElementById('bottomInput');
+  const straightInput  = document.getElementById('straightInput');
+  const toteInput      = document.getElementById('toteInput');
+  const win2TopInput   = document.getElementById('win2TopInput');
+  const win2BottomInput= document.getElementById('win2BottomInput');
+  const win3Input      = document.getElementById('win3Input');
   const addBtn         = document.getElementById('addBtn');
   const clearBtn       = document.getElementById('clearBtn');
   const exportBtn      = document.getElementById('exportBtn');
@@ -444,7 +666,11 @@
       cards = loadedCards.map(c => ({
         id: c.id || genId(),
         name: c.name || 'การ์ด',
-        items: Array.isArray(c.items) ? c.items.map(it => ({ key: it.key, top: it.top || 0, bottom: it.bottom || 0 })) : []
+        items: Array.isArray(c.items) ? c.items.map(it => (
+          String(it.key).length === 3
+            ? { key: it.key, straight: it.straight || 0, tote: it.tote || 0 }
+            : { key: it.key, top: it.top || 0, bottom: it.bottom || 0 }
+        )) : []
       }));
     } else {
       // migrate from legacy flat items list
@@ -520,7 +746,23 @@
     return true;
   }
 
-  // ===== Summarize (combines ALL cards via getAllItems) =====
+  // ===== Add item 3 หลัก (ตรง / โต๊ด) — เก็บเป็น {key(3), straight, tote} =====
+  function addItem3d(key, straight, tote) {
+    const k = String(key).trim();
+    if (!k) { alert('กรุณาใส่ตัวเลข'); return false; }
+    if (!/^\d{3}$/.test(k)) { alert('กรุณาใส่เลข 3 หลักเท่านั้น (000-999)'); return false; }
+    const s = parseAmount(straight) || 0;
+    const t = parseAmount(tote) || 0;
+    if (s === 0 && t === 0) { alert('กรุณาใส่จำนวนเงิน ตรง หรือ โต๊ด'); return false; }
+
+    const card = getActiveCard();
+    card.items.push({ key: k, straight: s, tote: t });
+    saveCards();
+    render();
+    return true;
+  }
+
+  // ===== Summarize (2 หลักเท่านั้น — combines ALL cards via getAllItems) =====
   function summarize() {
     const map = new Map();
     let grandTotal = 0;
@@ -528,6 +770,7 @@
     let grandBottomSum = 0;
 
     for (const it of getAllItems()) {
+      if (String(it.key).length !== 2) continue; // ข้ามรายการ 3 หลัก
       const itemTotal = it.top + it.bottom;
       grandTotal += itemTotal;
       grandTopSum += it.top;
@@ -545,6 +788,32 @@
       .sort((a, b) => a.key.localeCompare(b.key));
 
     return { rows, grand: grandTotal, grandTop: grandTopSum, grandBottom: grandBottomSum };
+  }
+
+  // ===== Summarize 3 หลัก (รวมทุกการ์ด) =====
+  function summarize3d() {
+    const map = new Map();
+    let gStraight = 0, gTote = 0, gTotal = 0;
+
+    for (const it of getAllItems()) {
+      if (String(it.key).length !== 3) continue;
+      const s = it.straight || 0;
+      const t = it.tote || 0;
+      const tot = s + t;
+      gStraight += s; gTote += t; gTotal += tot;
+      if (!map.has(it.key)) map.set(it.key, { count: 0, straightSum: 0, toteSum: 0, totalSum: 0 });
+      const cur = map.get(it.key);
+      cur.count += 1;
+      cur.straightSum += s;
+      cur.toteSum += t;
+      cur.totalSum += tot;
+    }
+
+    const rows = Array.from(map.entries())
+      .map(([key, v]) => ({ key, count: v.count, straightSum: v.straightSum, toteSum: v.toteSum, totalSum: v.totalSum }))
+      .sort((a, b) => a.key.localeCompare(b.key));
+
+    return { rows, grandStraight: gStraight, grandTote: gTote, grand: gTotal };
   }
 
   // ===== Card actions =====
@@ -603,12 +872,22 @@
     if (!c) return;
     const it = c.items[idx];
     if (!it) return;
-    const confirmMsg = `ต้องการลบรายการนี้?\n\n` +
-      `การ์ด: ${c.name}\n` +
-      `หมายเลข: ${it.key}\n` +
-      `บน: ${money(it.top)} บาท\n` +
-      `ล่าง: ${money(it.bottom)} บาท\n` +
-      `รวม: ${money(it.top + it.bottom)} บาท`;
+    let confirmMsg;
+    if (String(it.key).length === 3) {
+      confirmMsg = `ต้องการลบรายการนี้?\n\n` +
+        `การ์ด: ${c.name}\n` +
+        `หมายเลข: ${it.key}\n` +
+        `ตรง: ${money(it.straight || 0)} บาท\n` +
+        `โต๊ด: ${money(it.tote || 0)} บาท\n` +
+        `รวม: ${money((it.straight || 0) + (it.tote || 0))} บาท`;
+    } else {
+      confirmMsg = `ต้องการลบรายการนี้?\n\n` +
+        `การ์ด: ${c.name}\n` +
+        `หมายเลข: ${it.key}\n` +
+        `บน: ${money(it.top)} บาท\n` +
+        `ล่าง: ${money(it.bottom)} บาท\n` +
+        `รวม: ${money(it.top + it.bottom)} บาท`;
+    }
     if (confirm(confirmMsg)) {
       c.items.splice(idx, 1);
       saveCards();
@@ -936,7 +1215,7 @@
     // newest card first
     const ordered = cards.slice().reverse();
 
-    // chips: latest 3 (newest first) unless expanded; การ์ดที่เลือกอยู่จะแสดงเสมอ
+    // chips: latest 2 (newest first) unless expanded; การ์ดที่เลือกอยู่จะแสดงเสมอ
     const chipHtml = (c) => {
       const active = c.id === activeCardId ? ' active' : '';
       return `<button type="button" class="chip${active}" onclick="selectCard('${c.id}')">
@@ -946,26 +1225,26 @@
     };
 
     let chipCards;
-    if (showAllChips || cards.length <= 3) {
+    if (showAllChips || cards.length <= 2) {
       chipCards = ordered;
     } else {
-      chipCards = ordered.slice(0, 3);
+      chipCards = ordered.slice(0, 2);
       const ac = getActiveCard();
       if (ac && !chipCards.some(c => c.id === ac.id)) chipCards = chipCards.concat([ac]);
     }
 
     let chips = chipCards.map(chipHtml).join('');
-    if (cards.length > 3) {
+    if (cards.length > 2) {
       chips += showAllChips
         ? `<button type="button" class="chip chip-toggle" onclick="toggleShowAllChips()">▲ ย่อ</button>`
         : `<button type="button" class="chip chip-toggle" onclick="toggleShowAllChips()">+${cards.length - chipCards.length} เพิ่มเติม</button>`;
     }
     cardTabs.innerHTML = chips;
 
-    // boxes: show only the latest 3 unless expanded
-    const visible = showAllCards ? ordered : ordered.slice(0, 3);
+    // boxes: show only the latest 2 unless expanded
+    const visible = showAllCards ? ordered : ordered.slice(0, 2);
     let boxesHtml = visible.map(c => renderCardBox(c)).join('');
-    if (cards.length > 3) {
+    if (cards.length > 2) {
       boxesHtml += showAllCards
         ? `<div class="cards-toggle"><button class="show-all-btn" onclick="toggleShowAllCards()">ย่อการ์ด</button></div>`
         : `<div class="cards-toggle"><button class="show-all-btn" onclick="toggleShowAllCards()">ดูการ์ดทั้งหมด (${cards.length} การ์ด)</button></div>`;
@@ -979,22 +1258,35 @@
 
   function renderCardBox(c) {
     const active = c.id === activeCardId;
-    let topSum = 0, bottomSum = 0;
-    c.items.forEach(it => { topSum += it.top; bottomSum += it.bottom; });
-    const total = topSum + bottomSum;
+    let topSum = 0, bottomSum = 0, straightSum = 0, toteSum = 0;
+    c.items.forEach(it => {
+      if (String(it.key).length === 3) { straightSum += it.straight || 0; toteSum += it.tote || 0; }
+      else { topSum += it.top || 0; bottomSum += it.bottom || 0; }
+    });
+    const total = topSum + bottomSum + straightSum + toteSum;
 
     const itemsHtml = c.items.length
-      ? c.items.map((it, idx) => `
+      ? c.items.map((it, idx) => {
+          const is3 = String(it.key).length === 3;
+          const tags = is3
+            ? `${(it.straight || 0) > 0 ? `<span class="tag tag-straight">ตรง ${money(it.straight)}</span>` : ''}
+               ${(it.tote || 0) > 0 ? `<span class="tag tag-tote">โต๊ด ${money(it.tote)}</span>` : ''}`
+            : `${(it.top || 0) > 0 ? `<span class="tag tag-top">บน ${money(it.top)}</span>` : ''}
+               ${(it.bottom || 0) > 0 ? `<span class="tag tag-bottom">ล่าง ${money(it.bottom)}</span>` : ''}`;
+          return `
           <div class="ci-row">
             <span class="ci-key">${escapeHtml(it.key)}</span>
-            <span class="ci-amt">
-              ${it.top > 0 ? `<span class="tag tag-top">บน ${money(it.top)}</span>` : ''}
-              ${it.bottom > 0 ? `<span class="tag tag-bottom">ล่าง ${money(it.bottom)}</span>` : ''}
-            </span>
+            <span class="ci-amt">${tags}</span>
             <button class="ci-del" title="ลบรายการ" onclick="deleteItem('${c.id}', ${idx})">✕</button>
           </div>
-        `).join('')
+        `;
+        }).join('')
       : `<div class="ci-empty">ยังไม่มีรายการในการ์ดนี้</div>`;
+
+    const subParts = [];
+    if (topSum > 0 || bottomSum > 0) subParts.push(`บน ${money(topSum)} · ล่าง ${money(bottomSum)}`);
+    if (straightSum > 0 || toteSum > 0) subParts.push(`ตรง ${money(straightSum)} · โต๊ด ${money(toteSum)}`);
+    const subText = (subParts.join(' · ') || 'ยังไม่มียอด') + ` · รวม <b>${money(total)}</b>`;
 
     return `
       <div class="cardbox${active ? ' active' : ''}">
@@ -1009,7 +1301,7 @@
             <button class="icon-btn danger" title="ลบการ์ด" onclick="event.stopPropagation();deleteCard('${c.id}')">🗑</button>
           </div>
         </div>
-        <div class="cardbox-sub">บน ${money(topSum)} · ล่าง ${money(bottomSum)} · รวม <b>${money(total)}</b></div>
+        <div class="cardbox-sub">${subText}</div>
         <div class="cardbox-items">${itemsHtml}</div>
       </div>
     `;
@@ -1018,7 +1310,7 @@
   // ===== Render summary table =====
   function renderSummary() {
     const { rows, grand, grandTop, grandBottom } = summarize();
-    const allCount = getAllItems().length;
+    const allCount = getAllItems().filter(it => String(it.key).length === 2).length;
 
     if (rows.length === 0) {
       summaryBody.innerHTML = `<tr><td class="empty" colspan="5">ยังไม่มีรายการ — เพิ่มรายการเข้าการ์ดเพื่อดูสรุป</td></tr>`;
@@ -1054,6 +1346,252 @@
     renderSummary();
     renderHeatmap();
     renderHeatmapPrize();
+    render3d();
+    renderWinners();
+  }
+
+  // ===== Render 3 หลัก (ตาราง 10 แท็บ + visualize) =====
+  function render3d() {
+    renderHundredTabs();
+    render3dTop();
+    render3dTable();
+    renderHeatmap3d();
+  }
+
+  function renderHundredTabs() {
+    const { rows } = summarize3d();
+    const counts = Array(10).fill(0);
+    const totals = Array(10).fill(0);
+    rows.forEach(r => { const d = +r.key[0]; counts[d] += r.count; totals[d] += r.totalSum; });
+    const maxTotal = Math.max(...totals, 1);
+
+    let html = '';
+    for (let d = 0; d < 10; d++) {
+      const active = String(d) === active3dHundred ? ' active' : '';
+      const has = counts[d] > 0 ? ' has-data' : '';
+      const bg = getHeatmapColor(totals[d], maxTotal, 'green'); // สีตามยอดซื้อรวมของหลักร้อยนั้น
+      const txt = getTextColor(bg);
+      html += `<button type="button" class="sub-tab${active}${has}" style="background-color:${bg};color:${txt};"
+        title="${d}00–${d}99 · ยอดซื้อรวม ${money(totals[d])} บาท" onclick="select3dHundred('${d}')">
+        <span class="sub-tab-d">${d}</span>
+        <span class="sub-tab-label">${d}00–${d}99</span>
+        ${counts[d] > 0 ? `<span class="sub-tab-count">${counts[d]}</span>` : ''}
+      </button>`;
+    }
+    document.getElementById('hundredTabs').innerHTML = html;
+  }
+
+  window.select3dHundred = function(d) {
+    active3dHundred = String(d);
+    render3d();
+  };
+
+  // เลขเสี่ยงสูงสุด (ยอดซื้อรวมมากสุด) — มองง่ายว่าเสี่ยงตรงไหน
+  function render3dTop() {
+    const { rows, grand, grandStraight, grandTote } = summarize3d();
+    const el = document.getElementById('top3dList');
+    if (rows.length === 0) { el.innerHTML = ''; return; }
+
+    const top = rows.slice().sort((a, b) => b.totalSum - a.totalSum).slice(0, 5);
+    const max = top[0].totalSum || 1;
+    el.innerHTML =
+      `<div class="rank-head">🔝 เลขเสี่ยงสูงสุด (ยอดซื้อรวมมากสุด)</div>` +
+      top.map(r => `
+        <div class="rank-row">
+          <span class="rank-key">${r.key}</span>
+          <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.max(6, Math.round(r.totalSum / max * 100))}%"></div></div>
+          <span class="rank-val">${money(r.totalSum)}</span>
+        </div>`).join('') +
+      `<div class="rank-foot">รวม 3 หลักทั้งหมด: ตรง ${money(grandStraight)} · โต๊ด ${money(grandTote)} · รวม <b>${money(grand)}</b></div>`;
+  }
+
+  function render3dTable() {
+    const { rows } = summarize3d();
+    const d = active3dHundred;
+    const body = document.getElementById('summary3dBody');
+    const hundredRows = rows.filter(r => r.key[0] === d);
+
+    if (hundredRows.length === 0) {
+      body.innerHTML = `<tr><td class="empty" colspan="5">ยังไม่มีรายการ 3 หลักที่ขึ้นต้นด้วย ${d}</td></tr>`;
+    } else {
+      body.innerHTML = hundredRows.map(r => `
+        <tr>
+          <td><b>${r.key}</b></td>
+          <td>${r.count}</td>
+          <td>${money(r.straightSum)}<br><small style="color:#6b7280;">รางวัล: ${money(r.straightSum * 500)}</small></td>
+          <td>${money(r.toteSum)}<br><small style="color:#6b7280;">รางวัล: ${money(r.toteSum * 100)}</small></td>
+          <td>${money(r.totalSum)}</td>
+        </tr>
+      `).join('');
+    }
+
+    let cs = 0, ct = 0, tt = 0;
+    hundredRows.forEach(r => { cs += r.straightSum; ct += r.toteSum; tt += r.totalSum; });
+    document.getElementById('sum3dStraight').textContent = money(cs);
+    document.getElementById('sum3dTote').textContent = money(ct);
+    document.getElementById('sum3dTotal').textContent = money(tt);
+  }
+
+  // Visualize 3 หลัก: ตาราง 10×10 ของหลักร้อยที่เลือก (แถว=หลักสิบ, คอลัมน์=หลักหน่วย)
+  function renderHeatmap3d() {
+    const { rows } = summarize3d();
+    const d = active3dHundred;
+    const grid = document.getElementById('heatmap3dGrid');
+    document.getElementById('viz3dTitle').textContent = `ภาพรวมหลักร้อย ${d} (${d}00–${d}99) · ยอดซื้อรวม ตรง+โต๊ด`;
+
+    const totMap = new Map(), sMap = new Map(), tMap = new Map();
+    rows.forEach(r => {
+      if (r.key[0] === d) { totMap.set(r.key, r.totalSum); sMap.set(r.key, r.straightSum); tMap.set(r.key, r.toteSum); }
+    });
+    const maxValue = Math.max(...Array.from(totMap.values()), 1);
+
+    grid.innerHTML = '';
+    for (let t = 0; t < 10; t++) {
+      for (let u = 0; u < 10; u++) {
+        const key = `${d}${t}${u}`;
+        const value = totMap.get(key) || 0;
+        const bgColor = getHeatmapColor(value, maxValue, 'green');
+        const straightValue = sMap.get(key) || 0;
+        const toteValue = tMap.get(key) || 0;
+        const cell = document.createElement('div');
+        cell.className = 'heatmap-cell';
+        cell.style.backgroundColor = bgColor;
+        cell.style.color = getTextColor(bgColor);
+        cell.style.borderColor = value > 0 ? '#86efac' : '#e5e7eb';
+        cell.style.borderWidth = '2px';
+        const showLabel = straightValue <= 99999 && toteValue <= 99999;
+        cell.innerHTML = `
+          <div class="heatmap-cell-value">${straightValue > 0 ? (showLabel ? '<span class="heatmap-cell-label">ตรง</span> ' : '') + money(straightValue) : ''}</div>
+          <div class="heatmap-cell-number">${key}</div>
+          <div class="heatmap-cell-value">${toteValue > 0 ? (showLabel ? '<span class="heatmap-cell-label">โต๊ด</span> ' : '') + money(toteValue) : ''}</div>
+        `;
+        cell.title = `${key}: ตรง ${money(straightValue)}, โต๊ด ${money(toteValue)}, รวม ${money(value)} บาท`;
+        grid.appendChild(cell);
+      }
+    }
+  }
+
+  // ===== ตรวจรางวัล =====
+  function renderWinners() {
+    const el = document.getElementById('winResults');
+    const top2 = (win2TopInput.value || '').replace(/\D/g, '');
+    const bot2 = (win2BottomInput.value || '').replace(/\D/g, '');
+    const w3   = (win3Input.value || '').replace(/\D/g, '');
+    const has2Top = /^\d{2}$/.test(top2);
+    const has2Bot = /^\d{2}$/.test(bot2);
+    const has3 = /^\d{3}$/.test(w3);
+
+    if (!has2Top && !has2Bot && !has3) {
+      el.innerHTML = `<div class="win-empty">กรอกเลขที่ออกด้านบน ระบบจะค้นหาการ์ดที่มีเลขถูกรางวัลให้อัตโนมัติ</div>`;
+      return;
+    }
+
+    const w3sig = has3 ? w3.split('').sort().join('') : null; // ลายเซ็นหลักสำหรับเทียบโต๊ด
+    let grand = 0;
+    const cardBlocks = [];
+
+    cards.forEach(c => {
+      const winByIdx = {};
+      let cardPrize = 0, winCount = 0;
+      c.items.forEach((it, idx) => {
+        if (String(it.key).length === 3) {
+          if (!has3) return;
+          const straightWin = (it.key === w3) ? (it.straight || 0) : 0;
+          const toteWin = (w3sig && it.key.split('').sort().join('') === w3sig) ? (it.tote || 0) : 0;
+          const prize = straightWin * 500 + toteWin * 100;
+          if (prize > 0) { winByIdx[idx] = { type: '3', straightWin, toteWin, prize }; cardPrize += prize; winCount++; grand += prize; }
+        } else {
+          const topWin = (has2Top && it.key === top2) ? (it.top || 0) : 0;
+          const botWin = (has2Bot && it.key === bot2) ? (it.bottom || 0) : 0;
+          const prize = (topWin + botWin) * 70;
+          if (prize > 0) { winByIdx[idx] = { type: '2', topWin, botWin, prize }; cardPrize += prize; winCount++; grand += prize; }
+        }
+      });
+      if (winCount > 0) cardBlocks.push(renderWinCard(c, winByIdx, cardPrize, winCount));
+    });
+
+    const chips = [];
+    if (has2Top) chips.push(`<span class="win-chip">บน <b>${top2}</b></span>`);
+    if (has2Bot) chips.push(`<span class="win-chip">ล่าง <b>${bot2}</b></span>`);
+    if (has3)    chips.push(`<span class="win-chip">3 หลัก <b>${w3}</b></span>`);
+    const head = `<div class="win-summary">${chips.join('')}<span class="win-grand">รวมเงินรางวัล ${money(grand)} บาท</span></div>`;
+
+    el.innerHTML = head + (cardBlocks.length
+      ? cardBlocks.join('')
+      : `<div class="win-empty">ไม่มีเลขที่ถูกรางวัลในการ์ดใดเลย</div>`);
+  }
+
+  function renderWinCard(c, winByIdx, total, winCount) {
+    // แสดงทุกรายการในการ์ด — รายการที่ถูกจะไฮไลต์ + โชว์เงินรางวัล, ที่ไม่ถูกแสดงปกติแบบหรี่
+    const rows = c.items.map((it, idx) => {
+      const is3 = String(it.key).length === 3;
+      const w = winByIdx[idx];
+      if (w) {
+        let tags = '';
+        if (w.type === '2') {
+          if (w.topWin > 0) tags += `<span class="tag tag-top">บน ${money(w.topWin)} → รางวัล ${money(w.topWin * 70)}</span>`;
+          if (w.botWin > 0) tags += `<span class="tag tag-bottom">ล่าง ${money(w.botWin)} → รางวัล ${money(w.botWin * 70)}</span>`;
+        } else {
+          if (w.straightWin > 0) tags += `<span class="tag tag-straight">ตรง ${money(w.straightWin)} → รางวัล ${money(w.straightWin * 500)}</span>`;
+          if (w.toteWin > 0)     tags += `<span class="tag tag-tote">โต๊ด ${money(w.toteWin)} → รางวัล ${money(w.toteWin * 100)}</span>`;
+        }
+        return `
+        <div class="ci-row win-row">
+          <span class="ci-key">${escapeHtml(it.key)}</span>
+          <span class="ci-amt">${is3 ? `<span class="tag tag-3d">3 หลัก</span>` : ''}${tags}</span>
+          <span class="win-prize">+${money(w.prize)}</span>
+        </div>`;
+      } else {
+        const tags = is3
+          ? `${(it.straight || 0) > 0 ? `<span class="tag tag-straight">ตรง ${money(it.straight)}</span>` : ''}
+             ${(it.tote || 0) > 0 ? `<span class="tag tag-tote">โต๊ด ${money(it.tote)}</span>` : ''}`
+          : `${(it.top || 0) > 0 ? `<span class="tag tag-top">บน ${money(it.top)}</span>` : ''}
+             ${(it.bottom || 0) > 0 ? `<span class="tag tag-bottom">ล่าง ${money(it.bottom)}</span>` : ''}`;
+        return `
+        <div class="ci-row win-row-miss">
+          <span class="ci-key">${escapeHtml(it.key)}</span>
+          <span class="ci-amt">${is3 ? `<span class="tag tag-3d">3 หลัก</span>` : ''}${tags}</span>
+          <span class="win-miss">ไม่ถูก</span>
+        </div>`;
+      }
+    }).join('');
+
+    return `
+      <div class="cardbox win-cardbox">
+        <div class="cardbox-head" style="cursor:default;">
+          <div class="cardbox-title">
+            <span class="dot" style="background:#f59e0b;"></span>
+            <span class="cardbox-name">${escapeHtml(c.name)}</span>
+            <span class="cardbox-badge">ถูกรางวัล ${winCount}/${c.items.length} รายการ</span>
+          </div>
+          <div class="win-card-total">+${money(total)} บาท</div>
+        </div>
+        <div class="cardbox-items">${rows}</div>
+      </div>
+    `;
+  }
+
+  // ===== Tab switching (4 แท็บด้านบน) =====
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+  }
+
+  // ===== Digit mode toggle (2 หลัก / 3 หลัก) =====
+  function setDigitMode(m) {
+    digitMode = m;
+    const seg = document.getElementById('digitSeg');
+    seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.digit === m));
+    const amt2d = document.getElementById('amt2d');
+    const amt3d = document.getElementById('amt3d');
+    if (m === '3') {
+      amt2d.style.display = 'none'; amt3d.style.display = '';
+      keyInput.maxLength = 3; keyInput.placeholder = 'เช่น 123';
+    } else {
+      amt2d.style.display = ''; amt3d.style.display = 'none';
+      keyInput.maxLength = 2; keyInput.placeholder = 'เช่น 12';
+    }
+    keyInput.value = keyInput.value.replace(/\D/g, '').slice(0, m === '3' ? 3 : 2);
   }
 
   // ===== Quick-add helpers (verbatim) =====
@@ -1095,11 +1633,12 @@
   });
 
   keyInput.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
+    const max = digitMode === '3' ? 3 : 2;
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, max);
   });
 
   // Enter key adds the item
-  [keyInput, topInput, bottomInput].forEach(inp => {
+  [keyInput, topInput, bottomInput, straightInput, toteInput].forEach(inp => {
     inp.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -1110,12 +1649,39 @@
 
   // ===== Buttons =====
   addBtn.addEventListener('click', () => {
-    if (addItem(keyInput.value, topInput.value, bottomInput.value)) {
-      keyInput.value = '';
-      topInput.value = '';
-      bottomInput.value = '';
-      keyInput.focus();
+    if (digitMode === '3') {
+      if (addItem3d(keyInput.value, straightInput.value, toteInput.value)) {
+        keyInput.value = '';
+        straightInput.value = '';
+        toteInput.value = '';
+        keyInput.focus();
+      }
+    } else {
+      if (addItem(keyInput.value, topInput.value, bottomInput.value)) {
+        keyInput.value = '';
+        topInput.value = '';
+        bottomInput.value = '';
+        keyInput.focus();
+      }
     }
+  });
+
+  // ===== Tab nav + digit toggle + winner inputs =====
+  document.getElementById('tabsNav').querySelectorAll('.tab-btn').forEach(b => {
+    b.addEventListener('click', () => switchTab(b.dataset.tab));
+  });
+  document.getElementById('digitSeg').querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => setDigitMode(b.dataset.digit));
+  });
+  [win2TopInput, win2BottomInput].forEach(inp => {
+    inp.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
+      renderWinners();
+    });
+  });
+  win3Input.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
+    renderWinners();
   });
 
   clearBtn.addEventListener('click', () => {
@@ -1140,22 +1706,37 @@
 
     cards.forEach(c => {
       if (c.items.length === 0) return;
-      let ct = 0, cb = 0;
+      let ct = 0, cb = 0, cs = 0, cto = 0;
       lines.push(`📁 ${c.name}`);
       c.items.forEach(it => {
-        ct += it.top; cb += it.bottom;
-        lines.push(`   ${it.key} → บน ${money(it.top)} / ล่าง ${money(it.bottom)} / รวม ${money(it.top + it.bottom)}`);
+        if (String(it.key).length === 3) {
+          const s = it.straight || 0, t = it.tote || 0;
+          cs += s; cto += t;
+          lines.push(`   ${it.key} → ตรง ${money(s)} / โต๊ด ${money(t)} / รวม ${money(s + t)}`);
+        } else {
+          ct += it.top; cb += it.bottom;
+          lines.push(`   ${it.key} → บน ${money(it.top)} / ล่าง ${money(it.bottom)} / รวม ${money(it.top + it.bottom)}`);
+        }
       });
-      lines.push(`   รวมการ์ด: บน ${money(ct)} / ล่าง ${money(cb)} / รวม ${money(ct + cb)}`);
+      lines.push(`   รวมการ์ด: บน ${money(ct)} / ล่าง ${money(cb)} / ตรง ${money(cs)} / โต๊ด ${money(cto)} / รวม ${money(ct + cb + cs + cto)}`);
       lines.push('');
     });
 
-    lines.push('— สรุปตามเลข (รวมทุกการ์ด) —');
+    lines.push('— สรุปตามเลข 2 หลัก (รวมทุกการ์ด) —');
     rows.forEach(r => {
       lines.push(`เลข ${r.key} | จำนวน ${r.count} | บน ${money(r.topSum)} | ล่าง ${money(r.bottomSum)} | รวม ${money(r.totalSum)}`);
     });
-    lines.push('');
-    lines.push(`รวมทั้งหมด | จำนวน ${allItems.length} | บน ${money(grandTop)} | ล่าง ${money(grandBottom)} | รวม ${money(grand)}`);
+    lines.push(`รวม 2 หลัก | บน ${money(grandTop)} | ล่าง ${money(grandBottom)} | รวม ${money(grand)}`);
+
+    const s3 = summarize3d();
+    if (s3.rows.length) {
+      lines.push('');
+      lines.push('— สรุปตามเลข 3 หลัก (รวมทุกการ์ด) —');
+      s3.rows.forEach(r => {
+        lines.push(`เลข ${r.key} | จำนวน ${r.count} | ตรง ${money(r.straightSum)} | โต๊ด ${money(r.toteSum)} | รวม ${money(r.totalSum)}`);
+      });
+      lines.push(`รวม 3 หลัก | ตรง ${money(s3.grandStraight)} | โต๊ด ${money(s3.grandTote)} | รวม ${money(s3.grand)}`);
+    }
 
     const text = lines.join('\n');
     try {
@@ -1181,6 +1762,7 @@
   initMonthOptions();
   loadData();
   initDrawInputs();
+  setDigitMode('2');
   render();
 </script>
 </body>
