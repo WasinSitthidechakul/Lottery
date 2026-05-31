@@ -293,29 +293,6 @@
 
     <div class="tab-panel active" id="tab-input">
 
-    <!-- งวด (Global) -->
-    <section class="panel">
-      <div class="panel-label">งวดที่คำนวณ</div>
-      <div class="draw-grid">
-        <div class="field">
-          <label for="monthSelect">เดือน</label>
-          <select id="monthSelect"><option value="">เลือกเดือน</option></select>
-        </div>
-        <div class="field">
-          <label for="yearInput">ปี (พ.ศ.)</label>
-          <input id="yearInput" inputmode="numeric" placeholder="เช่น 2568" maxlength="4" />
-        </div>
-        <div class="field">
-          <label>งวดที่</label>
-          <div class="seg" id="drawSeg">
-            <button type="button" data-draw="1">งวด 1</button>
-            <button type="button" data-draw="2">งวด 2</button>
-          </div>
-        </div>
-      </div>
-      <div class="draw-badge" id="drawBadge"></div>
-    </section>
-
     <!-- เพิ่มรายการ -->
     <section class="panel">
       <div class="panel-label">เพิ่มรายการ</div>
@@ -403,6 +380,29 @@
         <button class="btn btn-soft" id="exportBtn">📋 คัดลอกสรุป</button>
         <button class="btn btn-danger" id="clearBtn">🗑 ล้างข้อมูลทั้งหมด</button>
       </div>
+    </section>
+
+    <!-- งวด (Global) -->
+    <section class="panel">
+      <div class="panel-label">งวดที่คำนวณ</div>
+      <div class="draw-grid">
+        <div class="field">
+          <label for="monthSelect">เดือน</label>
+          <select id="monthSelect"><option value="">เลือกเดือน</option></select>
+        </div>
+        <div class="field">
+          <label for="yearInput">ปี (พ.ศ.)</label>
+          <input id="yearInput" inputmode="numeric" placeholder="เช่น 2568" maxlength="4" />
+        </div>
+        <div class="field">
+          <label>งวดที่</label>
+          <div class="seg" id="drawSeg">
+            <button type="button" data-draw="1">งวด 1</button>
+            <button type="button" data-draw="2">งวด 2</button>
+          </div>
+        </div>
+      </div>
+      <div class="draw-badge" id="drawBadge"></div>
     </section>
 
     </div><!-- /tab-input -->
