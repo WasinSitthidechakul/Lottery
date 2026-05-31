@@ -73,6 +73,12 @@
     .seg button.active{background:var(--primary);color:#fff;box-shadow:var(--shadow-sm);}
     .seg-3{grid-template-columns:1fr 1fr 1fr;}
     .seg-3 button{font-size:14px;padding:9px 4px;}
+    /* เลขที่ซื้อ + วิธีใส่ บนบรรทัดเดียวกัน (ครึ่ง/ครึ่ง เมื่ออยู่โหมด 3 หลัก) */
+    .key-row{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px;}
+    .key-row.cols2{grid-template-columns:1fr 1fr;align-items:end;}
+    /* ช่อง ตรง / โต๊ด อยู่ข้างกันเมื่อเลือก "ตรง & โต๊ด" */
+    .amt3-fields{display:grid;grid-template-columns:1fr;gap:14px;}
+    .amt3-fields.both{grid-template-columns:1fr 1fr;}
 
     /* add panel */
     .add-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:12px;}
@@ -277,6 +283,8 @@
       .sub-tab-label{font-size:9px;}
       .rank-val{min-width:74px;font-size:13px;}
       .seg-3 button{font-size:12px;padding:9px 2px;}
+      .key-row.cols2{grid-template-columns:1fr;}
+      .amt3-fields.both{grid-template-columns:1fr;}
     }
   </style>
 </head>
@@ -296,8 +304,7 @@
     <div class="tab-panel active" id="tab-input">
 
     <!-- เพิ่มรายการ -->
-    <section class="panel">
-      <div class="panel-label">เพิ่มรายการ</div>
+    <section class="panel" style="padding:14px;">
       <div class="card-tabs-head">
         <span class="field-label">เลือกการ์ดที่จะเพิ่มเข้า</span>
         <button type="button" class="btn-newcard" onclick="createCard()">＋ การ์ดใหม่</button>
@@ -312,9 +319,19 @@
         </div>
       </div>
 
-      <div class="field" style="margin-bottom:14px;">
-        <label for="keyInput">เลขที่ซื้อ</label>
-        <input id="keyInput" inputmode="numeric" placeholder="เช่น 12" maxlength="2" />
+      <div class="key-row" id="keyRow">
+        <div class="field">
+          <label for="keyInput">เลขที่ซื้อ</label>
+          <input id="keyInput" inputmode="numeric" placeholder="เช่น 12" maxlength="2" />
+        </div>
+        <div class="field" id="mode3Field" style="display:none;">
+          <label>วิธีใส่</label>
+          <div class="seg seg-3" id="mode3Seg">
+            <button type="button" data-mode3="both" class="active">ตรง &amp; โต๊ด</button>
+            <button type="button" data-mode3="straight">ตรงอย่างเดียว</button>
+            <button type="button" data-mode3="tote">โต๊ดอย่างเดียว</button>
+          </div>
+        </div>
       </div>
 
       <!-- 2 หลัก: บน / ล่าง (กดเพิ่มทีเดียวทั้งคู่) -->
@@ -343,25 +360,18 @@
 
       <!-- 3 หลัก: เลือกวิธีใส่ (ตรง&โต๊ด / ตรงอย่างเดียว / โต๊ดอย่างเดียว) -->
       <div id="amt3d" style="display:none;">
-        <div class="field" style="margin-bottom:14px;">
-          <label>วิธีใส่</label>
-          <div class="seg seg-3" id="mode3Seg">
-            <button type="button" data-mode3="both" class="active">ตรง &amp; โต๊ด</button>
-            <button type="button" data-mode3="straight">ตรงอย่างเดียว</button>
-            <button type="button" data-mode3="tote">โต๊ดอย่างเดียว</button>
+        <div class="amt3-fields" id="amt3Fields">
+          <div id="field3Straight" class="field">
+            <label for="straightInput">ตรง</label>
+            <input id="straightInput" inputmode="decimal" placeholder="เช่น 50" />
+          </div>
+          <div id="field3Tote" class="field">
+            <label for="toteInput">โต๊ด</label>
+            <input id="toteInput" inputmode="decimal" placeholder="เช่น 50" />
           </div>
         </div>
 
-        <div id="field3Straight" class="field" style="margin-bottom:8px;">
-          <label for="straightInput">ตรง</label>
-          <input id="straightInput" inputmode="decimal" placeholder="เช่น 50" />
-        </div>
-        <div id="field3Tote" class="field" style="margin-bottom:8px;">
-          <label for="toteInput">โต๊ด</label>
-          <input id="toteInput" inputmode="decimal" placeholder="เช่น 50" />
-        </div>
-
-        <div class="quick-add compact">
+        <div class="quick-add compact" style="margin-top:12px;">
           <button type="button" onclick="addTo3d(5)">+5</button>
           <button type="button" onclick="addTo3d(10)">+10</button>
           <button type="button" onclick="addTo3d(20)">+20</button>
@@ -1593,12 +1603,16 @@
     seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.digit === m));
     const amt2d = document.getElementById('amt2d');
     const amt3d = document.getElementById('amt3d');
+    const mode3Field = document.getElementById('mode3Field');
+    const keyRow = document.getElementById('keyRow');
     if (m === '3') {
       amt2d.style.display = 'none'; amt3d.style.display = '';
+      mode3Field.style.display = ''; keyRow.classList.add('cols2');
       keyInput.maxLength = 3; keyInput.placeholder = 'เช่น 123';
       set3dMode(mode3);
     } else {
       amt2d.style.display = ''; amt3d.style.display = 'none';
+      mode3Field.style.display = 'none'; keyRow.classList.remove('cols2');
       keyInput.maxLength = 2; keyInput.placeholder = 'เช่น 12';
     }
     keyInput.value = keyInput.value.replace(/\D/g, '').slice(0, m === '3' ? 3 : 2);
@@ -1609,8 +1623,10 @@
     mode3 = m;
     const seg = document.getElementById('mode3Seg');
     seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.mode3 === m));
+    const wrap = document.getElementById('amt3Fields');
     const fStraight = document.getElementById('field3Straight');
     const fTote = document.getElementById('field3Tote');
+    wrap.classList.toggle('both', m === 'both');   // ตรง & โต๊ด อยู่ข้างกัน
     fStraight.style.display = (m === 'tote') ? 'none' : '';
     fTote.style.display = (m === 'straight') ? 'none' : '';
     // เคลียร์ช่องที่ถูกซ่อน เพื่อไม่ให้ค่าค้างถูกบันทึกตอนกดเพิ่ม
