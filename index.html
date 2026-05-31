@@ -73,8 +73,8 @@
     .seg button.active{background:var(--primary);color:#fff;box-shadow:var(--shadow-sm);}
     .seg-3{grid-template-columns:1fr 1fr 1fr;}
     .seg-3 button{font-size:14px;padding:9px 4px;}
-    /* เลขที่ซื้อ + วิธีใส่ บนบรรทัดเดียวกัน (ครึ่ง/ครึ่ง เมื่ออยู่โหมด 3 หลัก) */
-    .key-row{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px;}
+    /* เลขที่ซื้อ + ปุ่มเลือกโหมด บนบรรทัดเดียวกัน (ครึ่ง/ครึ่ง เมื่ออยู่โหมด 3 หลัก) */
+    .key-row{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:10px;}
     .key-row.cols2{grid-template-columns:1fr 1fr;align-items:end;}
     /* ช่อง ตรง / โต๊ด อยู่ข้างกันเมื่อเลือก "ตรง & โต๊ด" */
     .amt3-fields{display:grid;grid-template-columns:1fr;gap:14px;}
@@ -321,11 +321,9 @@
 
       <div class="key-row" id="keyRow">
         <div class="field">
-          <label for="keyInput">เลขที่ซื้อ</label>
-          <input id="keyInput" inputmode="numeric" placeholder="เช่น 12" maxlength="2" />
+          <input id="keyInput" inputmode="numeric" placeholder="เลขที่ซื้อ" maxlength="2" />
         </div>
         <div class="field" id="mode3Field" style="display:none;">
-          <label>วิธีใส่</label>
           <div class="seg seg-3" id="mode3Seg">
             <button type="button" data-mode3="both" class="active">ตรง &amp; โต๊ด</button>
             <button type="button" data-mode3="straight">ตรงอย่างเดียว</button>
@@ -338,12 +336,10 @@
       <div id="amt2d">
         <div class="add-grid add-grid-2">
           <div class="field">
-            <label for="topInput">บน</label>
-            <input id="topInput" inputmode="decimal" placeholder="เช่น 100" />
+            <input id="topInput" inputmode="decimal" placeholder="บน" />
           </div>
           <div class="field">
-            <label for="bottomInput">ล่าง</label>
-            <input id="bottomInput" inputmode="decimal" placeholder="เช่น 100" />
+            <input id="bottomInput" inputmode="decimal" placeholder="ล่าง" />
           </div>
         </div>
         <div class="quick-add">
@@ -358,16 +354,14 @@
         </div>
       </div>
 
-      <!-- 3 หลัก: เลือกวิธีใส่ (ตรง&โต๊ด / ตรงอย่างเดียว / โต๊ดอย่างเดียว) -->
+      <!-- 3 หลัก: ตรง / โต๊ด (ใส่ช่องใดช่องหนึ่งหรือทั้งคู่ก็ได้) -->
       <div id="amt3d" style="display:none;">
         <div class="amt3-fields" id="amt3Fields">
           <div id="field3Straight" class="field">
-            <label for="straightInput">ตรง</label>
-            <input id="straightInput" inputmode="decimal" placeholder="เช่น 50" />
+            <input id="straightInput" inputmode="decimal" placeholder="ตรง" />
           </div>
           <div id="field3Tote" class="field">
-            <label for="toteInput">โต๊ด</label>
-            <input id="toteInput" inputmode="decimal" placeholder="เช่น 50" />
+            <input id="toteInput" inputmode="decimal" placeholder="โต๊ด" />
           </div>
         </div>
 
@@ -476,7 +470,7 @@
         <div id="heatmapGrid" class="heatmap-grid heatmap-grid-large"></div>
         <div class="heatmap-legend">
           <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#f3f4f6;"></div><span>0</span></div>
-          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#d1fae5;"></div><span>น้อย</span></div>
+          <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#f3f4f6;border-color:#9ca3af;"></div><span>น้อย</span></div>
           <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#6ee7b7;"></div><span>ปานกลาง</span></div>
           <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#34d399;"></div><span>ปานกลาง-มาก</span></div>
           <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#10b981;"></div><span>มาก</span></div>
@@ -524,7 +518,7 @@
           <div id="heatmap3dGrid" class="heatmap-grid heatmap-grid-large"></div>
           <div class="heatmap-legend">
             <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#f3f4f6;"></div><span>0</span></div>
-            <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#dcfce7;"></div><span>น้อย</span></div>
+            <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#f3f4f6;border-color:#9ca3af;"></div><span>น้อย</span></div>
             <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#86efac;"></div><span>ปานกลาง</span></div>
             <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#4ade80;"></div><span>ค่อนข้างมาก</span></div>
             <div class="heatmap-legend-item"><div class="heatmap-legend-box" style="background:#22c55e;"></div><span>มาก</span></div>
@@ -587,7 +581,7 @@
   let showAllChips = false;
   let pairModeActive = { prize: false, total: false };
   let digitMode = '2';          // '2' = สองหลัก, '3' = สามหลัก
-  let mode3 = 'both';           // วิธีใส่ 3 หลัก: 'both' = ตรง&โต๊ด, 'straight' = ตรงอย่างเดียว, 'tote' = โต๊ดอย่างเดียว
+  let mode3 = 'both';           // โหมดใส่ 3 หลัก: 'both' = ตรง&โต๊ด, 'straight' = ตรงอย่างเดียว, 'tote' = โต๊ดอย่างเดียว
   let active3dHundred = '0';     // แท็บหลักร้อยของตาราง 3 หลัก (0-9)
 
   // ===== DOM refs =====
@@ -998,7 +992,7 @@
       return '#b45309';
     } else if (colorScheme === 'green') {
       const ratio = value / maxValue;
-      if (ratio < 0.2) return '#dcfce7';
+      if (ratio < 0.2) return '#f3f4f6';
       if (ratio < 0.4) return '#86efac';
       if (ratio < 0.6) return '#4ade80';
       if (ratio < 0.8) return '#22c55e';
@@ -1012,7 +1006,7 @@
       return '#b91c1c';
     } else {
       const ratio = value / maxValue;
-      if (ratio < 0.2) return '#d1fae5';
+      if (ratio < 0.2) return '#f3f4f6';
       if (ratio < 0.4) return '#6ee7b7';
       if (ratio < 0.6) return '#34d399';
       if (ratio < 0.8) return '#10b981';
@@ -1028,6 +1022,8 @@
   }
 
   function getBorderColor(bgColor, colorScheme, value = 0) {
+    // ระดับ "น้อย" (มียอด >0 แต่ต่ำสุด) ใช้ขอบเทาเดียวกับ ">0-5k"
+    if (bgColor === '#f3f4f6' && value > 0) return '#9ca3af';
     if (colorScheme === 'red') {
       const borderMap = {
         '#f3f4f6': '#d1d5db',
@@ -1037,9 +1033,6 @@
         '#ef4444': '#dc2626',
         '#b91c1c': '#991b1b'
       };
-      if (bgColor === '#f3f4f6' && value > 0) {
-        return '#9ca3af';
-      }
       return borderMap[bgColor] || '#d1d5db';
     } else if (colorScheme === 'blue') {
       const borderMap = {
@@ -1476,7 +1469,9 @@
         cell.className = 'heatmap-cell';
         cell.style.backgroundColor = bgColor;
         cell.style.color = getTextColor(bgColor);
-        cell.style.borderColor = value > 0 ? '#86efac' : '#e5e7eb';
+        cell.style.borderColor = value > 0
+          ? (bgColor === '#f3f4f6' ? '#9ca3af' : '#86efac')
+          : '#e5e7eb';
         cell.style.borderWidth = '2px';
         const showLabel = straightValue <= 99999 && toteValue <= 99999;
         cell.innerHTML = `
@@ -1608,17 +1603,17 @@
     if (m === '3') {
       amt2d.style.display = 'none'; amt3d.style.display = '';
       mode3Field.style.display = ''; keyRow.classList.add('cols2');
-      keyInput.maxLength = 3; keyInput.placeholder = 'เช่น 123';
+      keyInput.maxLength = 3;
       set3dMode(mode3);
     } else {
       amt2d.style.display = ''; amt3d.style.display = 'none';
       mode3Field.style.display = 'none'; keyRow.classList.remove('cols2');
-      keyInput.maxLength = 2; keyInput.placeholder = 'เช่น 12';
+      keyInput.maxLength = 2;
     }
     keyInput.value = keyInput.value.replace(/\D/g, '').slice(0, m === '3' ? 3 : 2);
   }
 
-  // ===== 3-digit input mode (ตรง&โต๊ด / ตรงอย่างเดียว / โต๊ดอย่างเดียว) =====
+  // ===== โหมดใส่ 3 หลัก (ตรง&โต๊ด / ตรงอย่างเดียว / โต๊ดอย่างเดียว) =====
   function set3dMode(m) {
     mode3 = m;
     const seg = document.getElementById('mode3Seg');
@@ -1648,7 +1643,7 @@
     bottomInput.value = bottomCurrentValue + amount;
   };
 
-  // ปุ่มลัด 3 หลัก: เพิ่มเข้าช่องที่แสดงอยู่ตามวิธีใส่ที่เลือก (ชุดเดียวใช้ได้ทุกโหมด)
+  // ปุ่มลัด 3 หลัก: เพิ่มเข้าช่องที่แสดงอยู่ตามโหมดที่เลือก (ชุดเดียวใช้ได้ทุกโหมด)
   window.addTo3d = function(amount) {
     if (mode3 !== 'tote') addToInput('straightInput', amount);
     if (mode3 !== 'straight') addToInput('toteInput', amount);
