@@ -71,6 +71,8 @@
     .seg button{border:0;background:transparent;color:var(--muted);font-weight:700;font-size:15px;
       padding:9px;border-radius:7px;cursor:pointer;transition:all .15s;}
     .seg button.active{background:var(--primary);color:#fff;box-shadow:var(--shadow-sm);}
+    .seg-3{grid-template-columns:1fr 1fr 1fr;}
+    .seg-3 button{font-size:14px;padding:9px 4px;}
 
     /* add panel */
     .add-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:12px;}
@@ -134,7 +136,7 @@
       background:var(--surface);cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;transition:all .12s;}
     .icon-btn:hover{background:var(--surface-soft);}
     .icon-btn.danger:hover{background:var(--danger-soft);border-color:#fecaca;}
-    .cardbox-sub{padding:10px 16px;font-size:14px;color:var(--muted);border-bottom:1px dashed var(--border);}
+    .cardbox-sub{padding:10px 16px;font-size:14px;color:var(--muted);border-top:1px dashed var(--border);background:var(--surface-soft);}
     .cardbox-sub b{color:var(--text);}
     .cardbox-items{padding:6px 10px 8px;}
     .ci-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid #f1f5f9;}
@@ -274,6 +276,7 @@
       .sub-tab-d{font-size:16px;}
       .sub-tab-label{font-size:9px;}
       .rank-val{min-width:74px;font-size:13px;}
+      .seg-3 button{font-size:12px;padding:9px 2px;}
     }
   </style>
 </head>
@@ -281,7 +284,6 @@
   <div class="app">
     <header class="app-header">
       <h1>💰 ตารางคำนวณหวย</h1>
-      <p class="subtitle">รวมยอดอัตโนมัติ · จัดกลุ่มเป็นการ์ด · ดู Heat Map</p>
     </header>
 
     <nav class="tabs-nav" id="tabsNav">
@@ -339,31 +341,35 @@
         </div>
       </div>
 
-      <!-- 3 หลัก: ตรง / โต๊ด (กดเพิ่มแยกกัน ไม่ต้องเท่ากัน) -->
+      <!-- 3 หลัก: เลือกวิธีใส่ (ตรง&โต๊ด / ตรงอย่างเดียว / โต๊ดอย่างเดียว) -->
       <div id="amt3d" style="display:none;">
-        <div class="amt-head"><span class="field-label">ตรง</span></div>
-        <input id="straightInput" inputmode="decimal" placeholder="เช่น 50" style="margin-bottom:8px;" />
-        <div class="quick-add compact">
-          <button type="button" onclick="addToInput('straightInput',5)">+5</button>
-          <button type="button" onclick="addToInput('straightInput',10)">+10</button>
-          <button type="button" onclick="addToInput('straightInput',20)">+20</button>
-          <button type="button" onclick="addToInput('straightInput',30)">+30</button>
-          <button type="button" onclick="addToInput('straightInput',50)">+50</button>
-          <button type="button" onclick="addToInput('straightInput',100)">+100</button>
-          <button type="button" onclick="addToInput('straightInput',150)">+150</button>
-          <button type="button" onclick="addToInput('straightInput',200)">+200</button>
+        <div class="field" style="margin-bottom:14px;">
+          <label>วิธีใส่</label>
+          <div class="seg seg-3" id="mode3Seg">
+            <button type="button" data-mode3="both" class="active">ตรง &amp; โต๊ด</button>
+            <button type="button" data-mode3="straight">ตรงอย่างเดียว</button>
+            <button type="button" data-mode3="tote">โต๊ดอย่างเดียว</button>
+          </div>
         </div>
-        <div class="amt-head"><span class="field-label">โต๊ด</span></div>
-        <input id="toteInput" inputmode="decimal" placeholder="เช่น 50" style="margin-bottom:8px;" />
+
+        <div id="field3Straight" class="field" style="margin-bottom:8px;">
+          <label for="straightInput">ตรง</label>
+          <input id="straightInput" inputmode="decimal" placeholder="เช่น 50" />
+        </div>
+        <div id="field3Tote" class="field" style="margin-bottom:8px;">
+          <label for="toteInput">โต๊ด</label>
+          <input id="toteInput" inputmode="decimal" placeholder="เช่น 50" />
+        </div>
+
         <div class="quick-add compact">
-          <button type="button" onclick="addToInput('toteInput',5)">+5</button>
-          <button type="button" onclick="addToInput('toteInput',10)">+10</button>
-          <button type="button" onclick="addToInput('toteInput',20)">+20</button>
-          <button type="button" onclick="addToInput('toteInput',30)">+30</button>
-          <button type="button" onclick="addToInput('toteInput',50)">+50</button>
-          <button type="button" onclick="addToInput('toteInput',100)">+100</button>
-          <button type="button" onclick="addToInput('toteInput',150)">+150</button>
-          <button type="button" onclick="addToInput('toteInput',200)">+200</button>
+          <button type="button" onclick="addTo3d(5)">+5</button>
+          <button type="button" onclick="addTo3d(10)">+10</button>
+          <button type="button" onclick="addTo3d(20)">+20</button>
+          <button type="button" onclick="addTo3d(30)">+30</button>
+          <button type="button" onclick="addTo3d(50)">+50</button>
+          <button type="button" onclick="addTo3d(100)">+100</button>
+          <button type="button" onclick="addTo3d(150)">+150</button>
+          <button type="button" onclick="addTo3d(200)">+200</button>
         </div>
       </div>
 
@@ -571,6 +577,7 @@
   let showAllChips = false;
   let pairModeActive = { prize: false, total: false };
   let digitMode = '2';          // '2' = สองหลัก, '3' = สามหลัก
+  let mode3 = 'both';           // วิธีใส่ 3 หลัก: 'both' = ตรง&โต๊ด, 'straight' = ตรงอย่างเดียว, 'tote' = โต๊ดอย่างเดียว
   let active3dHundred = '0';     // แท็บหลักร้อยของตาราง 3 หลัก (0-9)
 
   // ===== DOM refs =====
@@ -1303,8 +1310,8 @@
             <button class="icon-btn danger" title="ลบการ์ด" onclick="event.stopPropagation();deleteCard('${c.id}')">🗑</button>
           </div>
         </div>
-        <div class="cardbox-sub">${subText}</div>
         <div class="cardbox-items">${itemsHtml}</div>
+        <div class="cardbox-sub">${subText}</div>
       </div>
     `;
   }
@@ -1589,6 +1596,7 @@
     if (m === '3') {
       amt2d.style.display = 'none'; amt3d.style.display = '';
       keyInput.maxLength = 3; keyInput.placeholder = 'เช่น 123';
+      set3dMode(mode3);
     } else {
       amt2d.style.display = ''; amt3d.style.display = 'none';
       keyInput.maxLength = 2; keyInput.placeholder = 'เช่น 12';
@@ -1596,7 +1604,21 @@
     keyInput.value = keyInput.value.replace(/\D/g, '').slice(0, m === '3' ? 3 : 2);
   }
 
-  // ===== Quick-add helpers (verbatim) =====
+  // ===== 3-digit input mode (ตรง&โต๊ด / ตรงอย่างเดียว / โต๊ดอย่างเดียว) =====
+  function set3dMode(m) {
+    mode3 = m;
+    const seg = document.getElementById('mode3Seg');
+    seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.mode3 === m));
+    const fStraight = document.getElementById('field3Straight');
+    const fTote = document.getElementById('field3Tote');
+    fStraight.style.display = (m === 'tote') ? 'none' : '';
+    fTote.style.display = (m === 'straight') ? 'none' : '';
+    // เคลียร์ช่องที่ถูกซ่อน เพื่อไม่ให้ค่าค้างถูกบันทึกตอนกดเพิ่ม
+    if (m === 'tote') straightInput.value = '';
+    if (m === 'straight') toteInput.value = '';
+  }
+
+  // ===== Quick-add helpers =====
   window.addToInput = function(inputId, amount) {
     const input = document.getElementById(inputId);
     const currentValue = parseAmount(input.value) || 0;
@@ -1608,6 +1630,12 @@
     const bottomCurrentValue = parseAmount(bottomInput.value) || 0;
     topInput.value = topCurrentValue + amount;
     bottomInput.value = bottomCurrentValue + amount;
+  };
+
+  // ปุ่มลัด 3 หลัก: เพิ่มเข้าช่องที่แสดงอยู่ตามวิธีใส่ที่เลือก (ชุดเดียวใช้ได้ทุกโหมด)
+  window.addTo3d = function(amount) {
+    if (mode3 !== 'tote') addToInput('straightInput', amount);
+    if (mode3 !== 'straight') addToInput('toteInput', amount);
   };
 
   // ===== Input validation =====
@@ -1674,6 +1702,9 @@
   });
   document.getElementById('digitSeg').querySelectorAll('button').forEach(b => {
     b.addEventListener('click', () => setDigitMode(b.dataset.digit));
+  });
+  document.getElementById('mode3Seg').querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => set3dMode(b.dataset.mode3));
   });
   [win2TopInput, win2BottomInput].forEach(inp => {
     inp.addEventListener('input', (e) => {
@@ -1764,6 +1795,7 @@
   initMonthOptions();
   loadData();
   initDrawInputs();
+  set3dMode('both');
   setDigitMode('2');
   render();
 </script>
