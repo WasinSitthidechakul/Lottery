@@ -76,6 +76,13 @@
     /* เลขที่ซื้อ + ปุ่มเลือกโหมด บนบรรทัดเดียวกัน (ครึ่ง/ครึ่ง เมื่ออยู่โหมด 3 หลัก) */
     .key-row{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:10px;}
     .key-row.cols2{grid-template-columns:1fr 1fr;align-items:end;}
+    /* ช่องเลขที่ซื้อ (5/6) + ปุ่มสลับเลข (1/6) อยู่ข้างกัน */
+    .key-with-swap{display:grid;grid-template-columns:5fr 1fr;gap:8px;align-items:stretch;}
+    .btn-swap{border:1px solid var(--border-strong);background:var(--surface-soft);color:var(--primary-dark);
+      font-weight:700;font-size:12px;line-height:1.12;border-radius:var(--radius-sm);cursor:pointer;
+      padding:2px 4px;white-space:normal;transition:all .12s;}
+    .btn-swap:hover{background:var(--primary-soft);border-color:var(--primary);}
+    .btn-swap:active{transform:translateY(1px);}
     /* ช่อง ตรง / โต๊ด อยู่ข้างกันเมื่อเลือก "ตรง & โต๊ด" */
     .amt3-fields{display:grid;grid-template-columns:1fr;gap:14px;}
     .amt3-fields.both{grid-template-columns:1fr 1fr;}
@@ -131,7 +138,9 @@
     .cardbox-head{display:flex;justify-content:space-between;align-items:center;gap:10px;
       padding:14px 16px;cursor:pointer;background:linear-gradient(180deg,#fbfcfe,#f6f8fc);
       border-bottom:1px solid var(--border);}
-    .cardbox-title{display:flex;align-items:center;gap:9px;min-width:0;}
+    .cardbox-title{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;}
+    .cardbox-meta{font-size:13px;color:var(--muted);}
+    .cardbox-meta b{color:var(--text);}
     .cardbox-title .dot{width:10px;height:10px;border-radius:50%;background:var(--border-strong);flex:none;}
     .cardbox.active .cardbox-title .dot{background:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
     .cardbox-name{font-weight:800;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -142,8 +151,6 @@
       background:var(--surface);cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;transition:all .12s;}
     .icon-btn:hover{background:var(--surface-soft);}
     .icon-btn.danger:hover{background:var(--danger-soft);border-color:#fecaca;}
-    .cardbox-sub{padding:10px 16px;font-size:14px;color:var(--muted);border-top:1px dashed var(--border);background:var(--surface-soft);}
-    .cardbox-sub b{color:var(--text);}
     .cardbox-items{padding:6px 10px 8px;}
     .ci-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid #f1f5f9;}
     .ci-row:last-child{border-bottom:0;}
@@ -321,13 +328,16 @@
 
       <div class="key-row" id="keyRow">
         <div class="field">
-          <input id="keyInput" inputmode="numeric" placeholder="เลขที่ซื้อ" maxlength="2" />
+          <div class="key-with-swap" id="keyWithSwap">
+            <input id="keyInput" inputmode="numeric" placeholder="เลขที่ซื้อ" maxlength="2" />
+            <button type="button" id="swapBtn" class="btn-swap" title="ดึงเลขที่เพิ่มล่าสุดมาสลับหลัก (คงราคา บน/ล่าง เดิม)">สลับเลข</button>
+          </div>
         </div>
         <div class="field" id="mode3Field" style="display:none;">
           <div class="seg seg-3" id="mode3Seg">
             <button type="button" data-mode3="both" class="active">ตรง &amp; โต๊ด</button>
             <button type="button" data-mode3="straight">ตรงอย่างเดียว</button>
-            <button type="button" data-mode3="tote">โต๊ดอย่างเดียว</button>
+            <button type="button" data-mode3="reverse">6 กลับ</button>
           </div>
         </div>
       </div>
@@ -364,6 +374,8 @@
             <input id="toteInput" inputmode="decimal" placeholder="โต๊ด" />
           </div>
         </div>
+
+        <div id="reverseHint" class="muted" style="display:none;margin-top:8px;"></div>
 
         <div class="quick-add compact" style="margin-top:12px;">
           <button type="button" onclick="addTo3d(5)">+5</button>
@@ -577,12 +589,12 @@
   let activeCardId = null;
   let draw = { drawNumber: '', month: '', year: '' };
   let showAllTableRows = false;
-  let showAllCards = false;
-  let showAllChips = false;
+  let showAllChips = false;   // ควบคุมทั้ง chip และกล่องการ์ด (ขยาย/ย่อพร้อมกัน)
   let pairModeActive = { prize: false, total: false };
   let digitMode = '2';          // '2' = สองหลัก, '3' = สามหลัก
-  let mode3 = 'both';           // โหมดใส่ 3 หลัก: 'both' = ตรง&โต๊ด, 'straight' = ตรงอย่างเดียว, 'tote' = โต๊ดอย่างเดียว
+  let mode3 = 'both';           // โหมดใส่ 3 หลัก: 'both' = ตรง&โต๊ด, 'straight' = ตรงอย่างเดียว, 'reverse' = 6 กลับ
   let active3dHundred = '0';     // แท็บหลักร้อยของตาราง 3 หลัก (0-9)
+  let lastAdded2d = null;        // เลข 2 หลักที่เพิ่มล่าสุด {key, top, bottom} — ใช้กับปุ่ม "สลับเลข"
 
   // ===== DOM refs =====
   const monthSelect    = document.getElementById('monthSelect');
@@ -590,6 +602,7 @@
   const drawSeg        = document.getElementById('drawSeg');
   const drawBadge      = document.getElementById('drawBadge');
   const keyInput       = document.getElementById('keyInput');
+  const swapBtn        = document.getElementById('swapBtn');
   const topInput       = document.getElementById('topInput');
   const bottomInput    = document.getElementById('bottomInput');
   const straightInput  = document.getElementById('straightInput');
@@ -752,6 +765,7 @@
 
     const card = getActiveCard();
     card.items.push({ key: k, top: t, bottom: b });
+    lastAdded2d = { key: k, top: t, bottom: b };   // จำไว้ให้ปุ่ม "สลับเลข"
     saveCards();
     render();
     return true;
@@ -771,6 +785,46 @@
     saveCards();
     render();
     return true;
+  }
+
+  // ===== 6 กลับ: สลับหลักเลข 3 หลักให้ครบทุกแบบ (ไม่ซ้ำ) =====
+  // เช่น 123 -> [123,132,213,231,312,321], 556 -> [556,565,655]
+  function permute3(key) {
+    const ch = String(key).split('');
+    const out = new Set();
+    for (let i = 0; i < 3; i++)
+      for (let j = 0; j < 3; j++)
+        for (let k = 0; k < 3; k++)
+          if (i !== j && j !== k && i !== k) out.add(ch[i] + ch[j] + ch[k]);
+    return Array.from(out);
+  }
+
+  // ===== Add item 6 กลับ — เพิ่มทุกตัวที่สลับได้ลงใน "ตรง" ด้วยราคาเท่ากัน =====
+  function addItem3dReverse(key, price) {
+    const k = String(key).trim();
+    if (!k) { alert('กรุณาใส่ตัวเลข'); return false; }
+    if (!/^\d{3}$/.test(k)) { alert('กรุณาใส่เลข 3 หลักเท่านั้น (000-999)'); return false; }
+    const s = parseAmount(price) || 0;
+    if (s === 0) { alert('กรุณาใส่จำนวนเงิน'); return false; }
+
+    const card = getActiveCard();
+    permute3(k).forEach(p => card.items.push({ key: p, straight: s, tote: 0 }));
+    saveCards();
+    render();
+    return true;
+  }
+
+  // ===== แสดงตัวอย่างเลขที่จะเพิ่ม (โหมด 6 กลับ) =====
+  function updateReverseHint() {
+    const hint = document.getElementById('reverseHint');
+    if (!hint || mode3 !== 'reverse') return;
+    const k = (keyInput.value || '').replace(/\D/g, '');
+    if (k.length === 3) {
+      const perms = permute3(k);
+      hint.innerHTML = `จะเพิ่มเข้า “ตรง” ${perms.length} ตัว ราคาเท่ากัน: <b>${perms.join(' · ')}</b>`;
+    } else {
+      hint.textContent = 'ใส่เลข 3 หลัก ระบบจะสลับหลักให้ทุกแบบ แล้วเพิ่มเป็น “ตรง” ทุกตัว';
+    }
   }
 
   // ===== Summarize (2 หลักเท่านั้น — combines ALL cards via getAllItems) =====
@@ -908,11 +962,6 @@
 
   window.toggleShowAllTable = function() {
     showAllTableRows = !showAllTableRows;
-    render();
-  };
-
-  window.toggleShowAllCards = function() {
-    showAllCards = !showAllCards;
     render();
   };
 
@@ -1251,15 +1300,9 @@
     }
     cardTabs.innerHTML = chips;
 
-    // boxes: show only the latest 2 unless expanded
-    const visible = showAllCards ? ordered : ordered.slice(0, 2);
-    let boxesHtml = visible.map(c => renderCardBox(c)).join('');
-    if (cards.length > 2) {
-      boxesHtml += showAllCards
-        ? `<div class="cards-toggle"><button class="show-all-btn" onclick="toggleShowAllCards()">ย่อการ์ด</button></div>`
-        : `<div class="cards-toggle"><button class="show-all-btn" onclick="toggleShowAllCards()">ดูการ์ดทั้งหมด (${cards.length} การ์ด)</button></div>`;
-    }
-    cardsSection.innerHTML = boxesHtml;
+    // boxes: ขยาย/ย่อพร้อมกับ chip "+N เพิ่มเติม" (ใช้สถานะเดียวกัน) — ไม่มีปุ่มแยกแล้ว
+    const visible = showAllChips ? ordered : ordered.slice(0, 2);
+    cardsSection.innerHTML = visible.map(c => renderCardBox(c)).join('');
 
     // active card name in add button
     const ac = getActiveCard();
@@ -1295,10 +1338,12 @@
         }).join('')
       : `<div class="ci-empty">ยังไม่มีรายการในการ์ดนี้</div>`;
 
-    const subParts = [];
-    if (topSum > 0 || bottomSum > 0) subParts.push(`บน ${money(topSum)} · ล่าง ${money(bottomSum)}`);
-    if (straightSum > 0 || toteSum > 0) subParts.push(`ตรง ${money(straightSum)} · โต๊ด ${money(toteSum)}`);
-    const subText = (subParts.join(' · ') || 'ยังไม่มียอด') + ` · รวม <b>${money(total)}</b>`;
+    // ยอดรวมของการ์ด แสดงด้านบนข้างๆ จำนวนรายการ
+    const metaParts = [`${c.items.length} รายการ`];
+    if (topSum > 0 || bottomSum > 0) metaParts.push(`บน ${money(topSum)} · ล่าง ${money(bottomSum)}`);
+    if (straightSum > 0 || toteSum > 0) metaParts.push(`ตรง ${money(straightSum)} · โต๊ด ${money(toteSum)}`);
+    if (total > 0) metaParts.push(`รวม <b>${money(total)}</b>`);
+    const metaText = metaParts.join(' · ');
 
     return `
       <div class="cardbox${active ? ' active' : ''}">
@@ -1306,7 +1351,7 @@
           <div class="cardbox-title">
             <span class="dot"></span>
             <span class="cardbox-name">${escapeHtml(c.name)}</span>
-            <span class="cardbox-badge">${c.items.length} รายการ</span>
+            <span class="cardbox-meta">${metaText}</span>
           </div>
           <div class="cardbox-tools">
             <button class="icon-btn" title="เปลี่ยนชื่อการ์ด" onclick="event.stopPropagation();renameCard('${c.id}')">✎</button>
@@ -1314,7 +1359,6 @@
           </div>
         </div>
         <div class="cardbox-items">${itemsHtml}</div>
-        <div class="cardbox-sub">${subText}</div>
       </div>
     `;
   }
@@ -1600,20 +1644,24 @@
     const amt3d = document.getElementById('amt3d');
     const mode3Field = document.getElementById('mode3Field');
     const keyRow = document.getElementById('keyRow');
+    const keyWithSwap = document.getElementById('keyWithSwap');
     if (m === '3') {
       amt2d.style.display = 'none'; amt3d.style.display = '';
       mode3Field.style.display = ''; keyRow.classList.add('cols2');
       keyInput.maxLength = 3;
+      // โหมด 3 หลักไม่มีปุ่มสลับเลข — ให้ช่องเลขเต็มความกว้าง
+      swapBtn.style.display = 'none'; keyWithSwap.style.gridTemplateColumns = '1fr';
       set3dMode(mode3);
     } else {
       amt2d.style.display = ''; amt3d.style.display = 'none';
       mode3Field.style.display = 'none'; keyRow.classList.remove('cols2');
       keyInput.maxLength = 2;
+      swapBtn.style.display = ''; keyWithSwap.style.gridTemplateColumns = '';
     }
     keyInput.value = keyInput.value.replace(/\D/g, '').slice(0, m === '3' ? 3 : 2);
   }
 
-  // ===== โหมดใส่ 3 หลัก (ตรง&โต๊ด / ตรงอย่างเดียว / โต๊ดอย่างเดียว) =====
+  // ===== โหมดใส่ 3 หลัก (ตรง&โต๊ด / ตรงอย่างเดียว / 6 กลับ) =====
   function set3dMode(m) {
     mode3 = m;
     const seg = document.getElementById('mode3Seg');
@@ -1621,12 +1669,24 @@
     const wrap = document.getElementById('amt3Fields');
     const fStraight = document.getElementById('field3Straight');
     const fTote = document.getElementById('field3Tote');
+    const hint = document.getElementById('reverseHint');
     wrap.classList.toggle('both', m === 'both');   // ตรง & โต๊ด อยู่ข้างกัน
-    fStraight.style.display = (m === 'tote') ? 'none' : '';
-    fTote.style.display = (m === 'straight') ? 'none' : '';
-    // เคลียร์ช่องที่ถูกซ่อน เพื่อไม่ให้ค่าค้างถูกบันทึกตอนกดเพิ่ม
-    if (m === 'tote') straightInput.value = '';
-    if (m === 'straight') toteInput.value = '';
+
+    if (m === 'reverse') {
+      // 6 กลับ: ช่องเดียวคือราคา (นำไปใส่ "ตรง" ทุกตัวที่สลับได้)
+      fStraight.style.display = '';
+      fTote.style.display = 'none';
+      straightInput.placeholder = 'ราคา (ตรง · ทุกตัวที่กลับ)';
+      toteInput.value = '';
+      if (hint) { hint.style.display = ''; updateReverseHint(); }
+    } else {
+      straightInput.placeholder = 'ตรง';
+      fStraight.style.display = '';
+      fTote.style.display = (m === 'straight') ? 'none' : '';
+      // เคลียร์ช่องที่ถูกซ่อน เพื่อไม่ให้ค่าค้างถูกบันทึกตอนกดเพิ่ม
+      if (m === 'straight') toteInput.value = '';
+      if (hint) hint.style.display = 'none';
+    }
   }
 
   // ===== Quick-add helpers =====
@@ -1644,9 +1704,10 @@
   };
 
   // ปุ่มลัด 3 หลัก: เพิ่มเข้าช่องที่แสดงอยู่ตามโหมดที่เลือก (ชุดเดียวใช้ได้ทุกโหมด)
+  // both = ตรง+โต๊ด, straight/reverse = ตรง (ช่องราคา) เท่านั้น
   window.addTo3d = function(amount) {
-    if (mode3 !== 'tote') addToInput('straightInput', amount);
-    if (mode3 !== 'straight') addToInput('toteInput', amount);
+    addToInput('straightInput', amount);
+    if (mode3 === 'both') addToInput('toteInput', amount);
   };
 
   // ===== Input validation =====
@@ -1676,6 +1737,7 @@
   keyInput.addEventListener('input', (e) => {
     const max = digitMode === '3' ? 3 : 2;
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, max);
+    if (digitMode === '3' && mode3 === 'reverse') updateReverseHint();
   });
 
   // Enter key adds the item
@@ -1691,11 +1753,15 @@
   // ===== Buttons =====
   addBtn.addEventListener('click', () => {
     if (digitMode === '3') {
-      if (addItem3d(keyInput.value, straightInput.value, toteInput.value)) {
+      const ok = (mode3 === 'reverse')
+        ? addItem3dReverse(keyInput.value, straightInput.value)
+        : addItem3d(keyInput.value, straightInput.value, toteInput.value);
+      if (ok) {
         keyInput.value = '';
         straightInput.value = '';
         toteInput.value = '';
         keyInput.focus();
+        if (mode3 === 'reverse') updateReverseHint();
       }
     } else {
       if (addItem(keyInput.value, topInput.value, bottomInput.value)) {
@@ -1705,6 +1771,27 @@
         keyInput.focus();
       }
     }
+  });
+
+  // ===== ปุ่มสลับเลข (2 หลัก): ดึงเลขล่าสุดมาสลับหลัก คงราคา บน/ล่าง เดิม =====
+  swapBtn.addEventListener('click', () => {
+    // เลือกแหล่งข้อมูล: เลขที่เพิ่มล่าสุด ถ้ายังไม่มีให้ใช้เลขที่กำลังพิมพ์อยู่
+    let src = lastAdded2d;
+    if (!src) {
+      const cur = (keyInput.value || '').replace(/\D/g, '');
+      if (/^\d{2}$/.test(cur)) {
+        src = { key: cur, top: parseAmount(topInput.value) || 0, bottom: parseAmount(bottomInput.value) || 0 };
+      }
+    }
+    if (!src || !/^\d{2}$/.test(String(src.key))) {
+      alert('ยังไม่มีเลขที่เพิ่มล่าสุดให้สลับ');
+      return;
+    }
+    const k = String(src.key);
+    keyInput.value = k[1] + k[0];                 // สลับหลัก เช่น 72 -> 27
+    topInput.value = src.top ? src.top : '';      // คงราคาบนเดิม
+    bottomInput.value = src.bottom ? src.bottom : '';// คงราคาล่างเดิม
+    keyInput.focus();
   });
 
   // ===== Tab nav + digit toggle + winner inputs =====
